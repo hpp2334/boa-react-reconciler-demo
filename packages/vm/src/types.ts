@@ -1,5 +1,6 @@
 // Local type definitions for VM package
 import type { UINodeId, UINodeProps, UINodeType } from '@brrd/types'
+import type { OpaqueRoot } from 'react-reconciler';
 export * from '@brrd/types'
 
 export interface UITreeNode {
@@ -8,6 +9,7 @@ export interface UITreeNode {
   props: UINodeProps;
   children: UITreeNode[];
   parent?: UITreeNode;
+  _reactRoot?: OpaqueRoot
 }
 
 export interface UITree {
@@ -17,7 +19,7 @@ export interface UITree {
 // React Reconciler type definitions
 export type Type = string;
 export type Props = UINodeProps;
-export type Container = UITreeNode | null;
+export type Container = UITreeNode;
 export type Instance = UITreeNode;
 export type TextInstance = UITreeNode;
 export type SuspenseInstance = null;

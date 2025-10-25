@@ -122,6 +122,9 @@ export class VM {
           parent.children.splice(index, 0, child);
         }
       },
+      clearContainer(container) {
+        container.children = []
+      },
 
       // Required methods with minimal implementations
       preparePortalMount: () => { },
@@ -189,7 +192,28 @@ export class VM {
   }
 
   createRoot(): UINodeId {
-    return this.treeManager.createNode('rect', {}).id
+    const root = this.treeManager.createNode('rect', {})
+    const reactRoot = this.reconciler.createContainer(
+      root,
+      0,
+      null,
+      true,
+      null,
+      '',
+      (error) => {
+        throw error
+      },
+      (error) => {
+        throw error
+      },
+      (error) => {
+        throw error
+      },
+      () => {},
+      null
+    )
+    root._reactRoot = reactRoot
+    return root.id
   }
 
   render(nodeId: string, element: React.ReactElement): void {
@@ -197,8 +221,11 @@ export class VM {
     if (!container) {
       throw Error(`Node ${nodeId} not found`)
     }
+    if (!container._reactRoot) {
+      throw Error(`Node ${nodeId} not a react root`)
+    }
 
-    this.reconciler.updateContainer(element, container, null, null);
+    this.reconciler.updateContainer(element, container._reactRoot, null, null);
   }
 
   clear(nodeId: UINodeId): void {
