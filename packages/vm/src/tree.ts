@@ -65,7 +65,7 @@ export class TreeManager {
     return true;
   }
 
-  findNode(id: UINodeId): UITreeNode | undefined {
+  getNode(id: UINodeId): UITreeNode | undefined {
     return this.tree.nodes.get(id);
   }
 
@@ -74,7 +74,41 @@ export class TreeManager {
   }
 
   getTree(): UITree {
-    return { ...this.tree };
+    return {
+      nodes: new Map(this.tree.nodes)
+    };
+  }
+
+  snapshot(nodeId: UINodeId): string {
+      const node = this.tree.nodes.get(nodeId);
+      if (!node) {
+        return `Node ${nodeId} not found`;
+      }
+      return this.formatNode(node, 0);
+  }
+
+  private formatNode(node: UITreeNode, indent: number): string {
+    const spaces = '  '.repeat(indent);
+    const propsStr = this.formatProps(node.props);
+    const childrenStr = node.children.length > 0
+      ? '\n' + node.children.map(child => this.formatNode(child, indent + 1)).join('\n')
+      : '';
+
+    return `${spaces}<${node.type}${propsStr}>${childrenStr}`;
+  }
+
+  private formatProps(props: UINodeProps): string {
+    const entries = Object.entries(props)
+      .filter(([, value]) => value !== undefined && value !== null)
+      .map(([key, value]) => {
+        if (typeof value === 'string') {
+          return `${key}="${value}"`;
+        } else {
+          return `${key}=${JSON.stringify(value)}`;
+        }
+      });
+
+    return entries.length > 0 ? ` ${entries.join(' ')}` : '';
   }
 
   private generateId(): UINodeId {

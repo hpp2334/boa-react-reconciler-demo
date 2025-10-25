@@ -1,3 +1,5 @@
+import type React from "react";
+
 // Node type identifiers
 export type UINodeId = string;
 
@@ -12,4 +14,5 @@ export interface UINodeProps {
     text?: string
     color?: string
     backgroundColor?: string
+    children?: React.ReactNode[]
 }

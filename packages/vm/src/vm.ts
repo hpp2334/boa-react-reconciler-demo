@@ -192,11 +192,20 @@ export class VM {
     return this.treeManager.createNode('rect', {}).id
   }
 
-  render(container: UITreeNode, element: React.ReactElement): void {
+  render(nodeId: string, element: React.ReactElement): void {
+    const container = this.treeManager.getNode(nodeId)
+    if (!container) {
+      throw Error(`Node ${nodeId} not found`)
+    }
+
     this.reconciler.updateContainer(element, container, null, null);
   }
 
   clear(nodeId: UINodeId): void {
     this.treeManager.removeNode(nodeId);
+  }
+
+  snapshot(nodeId: UINodeId): string {
+    return this.treeManager.snapshot(nodeId);
   }
 }
