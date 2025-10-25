@@ -5,6 +5,7 @@ export type {
   UITreeNode,
   UITree,
   UINodeType,
+  UINodeProps,
   Type,
   Props,
   Container,

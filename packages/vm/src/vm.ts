@@ -5,6 +5,7 @@ import type {
   UINodeId,
   UITreeNode,
   UINodeType,
+  UINodeProps,
   Type,
   Props,
   Container,
@@ -115,7 +116,7 @@ export class VM {
         }
       },
       insertBefore: (parent: Instance, child: Instance, beforeChild: Instance): void => {
-        const index = parent.children.findIndex(c => c.id === beforeChild.id);
+        const index = parent.children.findIndex((c: Instance) => c.id === beforeChild.id);
         if (index !== -1) {
           child.parent = parent;
           parent.children.splice(index, 0, child);

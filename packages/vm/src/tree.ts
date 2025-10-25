@@ -1,11 +1,11 @@
-import type { UITreeNode, UITree, UINodeType, UINodeId } from './types';
+import type { UITreeNode, UITree, UINodeType, UINodeId, UINodeProps } from './types';
 
 export class TreeManager {
   private tree: UITree = {
     nodes: new Map(),
   };
 
-  createNode(type: UINodeType, props: Record<string, any> = {}): UITreeNode {
+  createNode(type: UINodeType, props: UINodeProps = {}): UITreeNode {
     const node: UITreeNode = {
       id: this.generateId(),
       type,
@@ -23,7 +23,7 @@ export class TreeManager {
   }
 
   removeChild(parent: UITreeNode, childId: UINodeId): boolean {
-    const index = parent.children.findIndex(child => child.id === childId);
+    const index = parent.children.findIndex((child: UITreeNode) => child.id === childId);
     if (index !== -1) {
       const removed = parent.children[index];
       if (removed) {
@@ -57,7 +57,7 @@ export class TreeManager {
     return true;
   }
 
-  updateNodeProps(nodeId: UINodeId, props: Record<string, any>): boolean {
+  updateNodeProps(nodeId: UINodeId, props: UINodeProps): boolean {
     const node = this.tree.nodes.get(nodeId);
     if (!node) return false;
 
@@ -70,7 +70,7 @@ export class TreeManager {
   }
 
   findNodeByType(type: string): UITreeNode[] {
-    return Array.from(this.tree.nodes.values()).filter(node => node.type === type);
+    return Array.from(this.tree.nodes.values()).filter((node: UITreeNode) => node.type === type);
   }
 
   getTree(): UITree {
