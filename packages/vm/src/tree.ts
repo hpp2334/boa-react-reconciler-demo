@@ -98,6 +98,7 @@ export class TreeManager {
 
   private convertToDrawable(node: UITreeNode): UINodeDrawable {
     const drawable: UINodeDrawable = {
+      id: node.id,
       type: node.type,
       props: { ...node.props },
       children: []

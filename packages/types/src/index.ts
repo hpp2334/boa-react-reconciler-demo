@@ -18,6 +18,7 @@ export interface UINodeProps {
 }
 
 export interface UINodeDrawable {
+    id: UINodeId
     type: UINodeType
     props: UINodeProps
     children: UINodeDrawable[]
