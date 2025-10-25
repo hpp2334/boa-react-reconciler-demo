@@ -3,7 +3,7 @@
   "module": "./dist/index.js",
   "private": false,
   "scripts": {
-    "build": "pnpm -F vm build && pnpm -F vm prelude && tsc && rspack build"
+    "build": "pnpm -F vm build && tsc && rspack build"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,7 +14,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@brrd/prelude": "workspace:*",
     "@brrd/vm": "workspace:*"
   }
 }

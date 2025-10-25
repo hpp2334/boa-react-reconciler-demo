@@ -13,10 +13,6 @@ const config: any = defineConfig({
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
-  externals: {
-    'react': 'React',
-    'react-reconciler': 'ReactReconciler'
-  },
   module: {
     rules: [
       {
