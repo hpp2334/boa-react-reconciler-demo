@@ -15,16 +15,21 @@ export interface UITree {
 
 // ReactReconciler type definitions
 export type Type = string;
-export type Props = Record<string, any>;
+export type Props = Object;
 export type Container = UITreeNode | null;
 export type Instance = UITreeNode;
 export type TextInstance = UITreeNode;
 export type SuspenseInstance = null;
-export type HydratableInstance = null;
-export type FormInstance = null;
-export type PublicInstance = UITreeNode;
-export type HostContext = {};
-export type ChildSet = null;
-export type TimeoutHandle = number
+export type HydratableInstance = Instance | TextInstance;
+export type FormInstance = Instance;
+export type PublicInstance = Instance;
+export type HostContext = {
+  isInAParentText: boolean,
+};
+export type ChildSet = void;
+export type TimeoutHandle = number;
 export type NoTimeout = -1;
 export type TransitionStatus = 0;
+
+export type PublicRootInstance = any; // Simplified for VM
+export type EventPriority = 0; // Simplified for VM

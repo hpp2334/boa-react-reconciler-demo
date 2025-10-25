@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactReconciler, { type HostConfig, type Reconciler } from 'react-reconciler';
+import ReactReconciler, { type Reconciler } from 'react-reconciler';
 import { TreeManager } from './tree';
 import type {
   UITreeNode,
@@ -20,9 +20,13 @@ import type {
   TransitionStatus
 } from './types';
 
+declare const setTimeout: (fn: (...args: any[]) => any, ms: number) => number
+declare const clearTimeout: (handle: number) => void
+
 export class VM {
   private treeManager: TreeManager;
-  private reconciler!: Reconciler<Container, Instance, TextInstance, SuspenseInstance, FormInstance, PublicInstance>
+  private reconciler!: Reconciler<Container, Instance, TextInstance, SuspenseInstance, FormInstance, PublicInstance>;
+  private currentUpdatePriority: ReactReconciler.EventPriority = 0;
 
   constructor() {
     this.treeManager = new TreeManager();
@@ -46,8 +50,8 @@ export class VM {
       TransitionStatus
     >({
       // Required methods
-      getRootHostContext: (): HostContext => ({}),
-      getChildHostContext: (): HostContext => ({}),
+      getRootHostContext: (): HostContext => ({ isInAParentText: false }),
+      getChildHostContext: (): HostContext => ({ isInAParentText: false }),
       prepareForCommit: () => null,
       resetAfterCommit: () => { },
       createInstance: (
@@ -77,18 +81,18 @@ export class VM {
       commitUpdate: (
         instance: Instance,
         _type: Type,
-        _prevProps: Props,
-        nextProps: Props,
+        _oldProps: Props,
+        newProps: Props,
         _internalHandle: any
       ): void => {
-        this.treeManager.updateNodeProps(instance.id, nextProps);
+        this.treeManager.updateNodeProps(instance.id, newProps);
       },
       commitMount: () => { },
       getPublicInstance: (instance: Instance): PublicInstance => instance,
 
       // Text handling
-      shouldSetTextContent: (_type: Type, props: Props): boolean => {
-        return typeof props.children === 'string' || typeof props.children === 'number';
+      shouldSetTextContent: (_type: Type, _props: Props): boolean => {
+        return false;
       },
       createTextInstance: (
         text: string,
@@ -121,7 +125,7 @@ export class VM {
 
       // Required methods with minimal implementations
       preparePortalMount: () => { },
-      scheduleTimeout: (fn: () => void, delay: number): TimeoutHandle => (setTimeout as any)(fn, delay),
+      scheduleTimeout: (fn: () => void, delay: number): TimeoutHandle => setTimeout(fn, delay),
       cancelTimeout: (id: TimeoutHandle): void => clearTimeout(id),
       noTimeout: -1 as NoTimeout,
       isPrimaryRenderer: true,
@@ -137,14 +141,19 @@ export class VM {
       prepareScopeUpdate: () => { },
       getInstanceFromScope: () => null,
       detachDeletedInstance: () => { },
-      getCurrentUpdatePriority: () => 0,
-      setCurrentUpdatePriority: () => { },
+      getCurrentUpdatePriority: () => this.currentUpdatePriority,
+      setCurrentUpdatePriority: (newPriority: ReactReconciler.EventPriority): void => {
+        this.currentUpdatePriority = newPriority;
+      },
       resetFormInstance: () => { },
       requestPostPaintCallback: () => { },
       NotPendingTransition: null,
       HostTransitionContext: null as any,
-      resolveUpdatePriority: function (): ReactReconciler.EventPriority {
-        return 0
+      resolveUpdatePriority: (): ReactReconciler.EventPriority => {
+        if (this.currentUpdatePriority !== 0) {
+          return this.currentUpdatePriority;
+        }
+        return 1; // DefaultEventPriority
       },
       shouldAttemptEagerTransition: function (): boolean {
         return false
@@ -157,15 +166,15 @@ export class VM {
       resolveEventTimeStamp: function (): number {
         return 0
       },
-      maySuspendCommit: function (type: string, props: Props): boolean {
+      maySuspendCommit: function (_type: string, _props: Props): boolean {
         return false
       },
-      preloadInstance: function (type: string, props: Props): boolean {
+      preloadInstance: function (_type: string, _props: Props): boolean {
         return false
       },
       startSuspendingCommit: function (): void {
       },
-      suspendInstance: function (type: string, props: Props): void {
+      suspendInstance: function (_type: string, _props: Props): void {
       },
       waitForCommitToBeReady: function () {
         return null
