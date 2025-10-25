@@ -24,7 +24,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@boa-dev/boa_wasm": "^0.21.0",
     "@brrd/prelude": "workspace:*"
   }
 }

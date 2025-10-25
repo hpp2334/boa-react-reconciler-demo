@@ -1,7 +1,7 @@
-import { main_js, evaluate } from '@boa-dev/boa_wasm'
+import { BoaContext } from '../../../boa-wasm/pkg'
 import x from '@brrd/prelude?raw'
 
 
 export function add(a: number, b: number): number {
-  return parseFloat(evaluate(`${a}+${b}`))
+  return parseFloat(new BoaContext().evaluate(`${a}+${b}`))
 }
