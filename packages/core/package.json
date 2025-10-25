@@ -1,15 +1,11 @@
 {
   "name": "@brrd/core",
-  "module": "index.ts",
-  "type": "module",
+  "module": "./dist/index.js",
   "private": false,
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node",
-    "dev": "bun --watch src/index.ts",
-    "test": "bun test"
+    "build": "tsc && rspack build"
   },
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -21,7 +17,14 @@
     "dist"
   ],
   "devDependencies": {
+    "@rspack/cli": "^1.5.8",
+    "@rspack/core": "^1.0.0",
     "@types/bun": "latest",
+    "@types/react-reconciler": "^0.32.2",
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@boa-dev/boa_wasm": "^0.21.0",
+    "@brrd/prelude": "workspace:*"
   }
 }

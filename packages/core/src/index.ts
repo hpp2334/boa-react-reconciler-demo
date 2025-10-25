@@ -1,15 +1,7 @@
-/**
- * BOA React Reconciler Demo - Core Package
- *
- * This package contains the core functionality for the BOA React reconciler implementation.
- */
+import { main_js, evaluate } from '@boa-dev/boa_wasm'
+import x from '@brrd/prelude?raw'
 
-export const VERSION = '1.0.0';
 
-export function hello(name: string = 'World'): string {
-  return `Hello, ${name}! This is the BOA React Reconciler Core package v${VERSION}`;
+export function add(a: number, b: number): number {
+  return parseFloat(evaluate(`${a}+${b}`))
 }
-
-export * from './reconciler';
-export * from './fiber';
-export * from './scheduler';
