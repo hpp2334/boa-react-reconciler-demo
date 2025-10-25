@@ -2,6 +2,7 @@ import React from 'react';
 import ReactReconciler, { type Reconciler } from 'react-reconciler';
 import { TreeManager } from './tree';
 import type {
+  UINodeId,
   UITreeNode,
   UINodeType,
   Type,
@@ -71,9 +72,7 @@ export class VM {
         this.treeManager.addChild(parent, child);
       },
       appendChildToContainer: (container: Container, child: Instance): void => {
-        if (!container) {
-          this.treeManager.setRoot(child);
-        } else {
+        if (container) {
           this.treeManager.addChild(container, child);
         }
       },
@@ -188,50 +187,15 @@ export class VM {
     return 'rect'; // Default to rect for other elements
   }
 
-  render(element: React.ReactElement): void {
-    let container = this.treeManager.getRoot();
+  createRoot(): UINodeId {
+    return this.treeManager.createNode('rect', {}).id
+  }
 
-    // Create a dummy root container if none exists
-    if (!container) {
-      container = this.treeManager.createNode('rect', {});
-      this.treeManager.setRoot(container);
-    }
-
+  render(container: UITreeNode, element: React.ReactElement): void {
     this.reconciler.updateContainer(element, container, null, null);
   }
 
-  clear(): void {
-    const root = this.treeManager.getRoot();
-    if (root) {
-      this.treeManager.removeNode(root.id);
-      this.treeManager.setRoot(null);
-    }
-  }
-
-  getTreeManager(): TreeManager {
-    return this.treeManager;
-  }
-
-  getTreeNode(id: string): UITreeNode | undefined {
-    return this.treeManager.findNode(id);
-  }
-
-  dumpTree(): string {
-    const root = this.treeManager.getRoot();
-    if (!root) return 'Empty tree';
-
-    const dumpNode = (node: UITreeNode, depth: number = 0): string => {
-      const indent = '  '.repeat(depth);
-      const propsStr = Object.keys(node.props).length > 0
-        ? ` ${JSON.stringify(node.props)}`
-        : '';
-      const childStr = node.children.length > 0
-        ? '\n' + node.children.map(child => dumpNode(child, depth + 1)).join('\n')
-        : '';
-
-      return `${indent}${node.type}${propsStr}${childStr}`;
-    };
-
-    return dumpNode(root);
+  clear(nodeId: UINodeId): void {
+    this.treeManager.removeNode(nodeId);
   }
 }

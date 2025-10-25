@@ -1,8 +1,7 @@
-import type { UITreeNode, UITree, UINodeType } from './types';
+import type { UITreeNode, UITree, UINodeType, UINodeId } from './types';
 
 export class TreeManager {
   private tree: UITree = {
-    root: null,
     nodes: new Map(),
   };
 
@@ -23,7 +22,7 @@ export class TreeManager {
     parent.children.push(child);
   }
 
-  removeChild(parent: UITreeNode, childId: string): boolean {
+  removeChild(parent: UITreeNode, childId: UINodeId): boolean {
     const index = parent.children.findIndex(child => child.id === childId);
     if (index !== -1) {
       const removed = parent.children[index];
@@ -37,7 +36,7 @@ export class TreeManager {
     return false;
   }
 
-  removeNode(nodeId: string): boolean {
+  removeNode(nodeId: UINodeId): boolean {
     const node = this.tree.nodes.get(nodeId);
     if (!node) return false;
 
@@ -58,7 +57,7 @@ export class TreeManager {
     return true;
   }
 
-  updateNodeProps(nodeId: string, props: Record<string, any>): boolean {
+  updateNodeProps(nodeId: UINodeId, props: Record<string, any>): boolean {
     const node = this.tree.nodes.get(nodeId);
     if (!node) return false;
 
@@ -66,7 +65,7 @@ export class TreeManager {
     return true;
   }
 
-  findNode(id: string): UITreeNode | undefined {
+  findNode(id: UINodeId): UITreeNode | undefined {
     return this.tree.nodes.get(id);
   }
 
@@ -78,15 +77,7 @@ export class TreeManager {
     return { ...this.tree };
   }
 
-  setRoot(root: UITreeNode | null): void {
-    this.tree.root = root;
-  }
-
-  getRoot(): UITreeNode | null {
-    return this.tree.root;
-  }
-
-  private generateId(): string {
-    return `node_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  private generateId(): UINodeId {
+    return `node_${Date.now()}_${Math.random().toString(36).substring(2, 11)}` as UINodeId;
   }
 }

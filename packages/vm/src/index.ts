@@ -1,9 +1,10 @@
 export { VM } from './vm';
 export { TreeManager } from './tree';
 export type {
-  UITreeNode as TreeNode,
-  UITree as VMTree,
-  UINodeType as NodeType,
+  UINodeId,
+  UITreeNode,
+  UITree,
+  UINodeType,
   Type,
   Props,
   Container,

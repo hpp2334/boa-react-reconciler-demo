@@ -1,7 +1,8 @@
+export type UINodeId = string;
 export type UINodeType = 'rect' | 'text';
 
 export interface UITreeNode {
-  id: string;
+  id: UINodeId;
   type: UINodeType;
   props: Record<string, any>;
   children: UITreeNode[];
@@ -9,8 +10,7 @@ export interface UITreeNode {
 }
 
 export interface UITree {
-  root: UITreeNode | null;
-  nodes: Map<string, UITreeNode>;
+  nodes: Map<UINodeId, UITreeNode>;
 }
 
 // ReactReconciler type definitions
@@ -31,5 +31,4 @@ export type TimeoutHandle = number;
 export type NoTimeout = -1;
 export type TransitionStatus = 0;
 
-export type PublicRootInstance = any; // Simplified for VM
-export type EventPriority = 0; // Simplified for VM
+export type PublicRootInstance = UITreeNode;
