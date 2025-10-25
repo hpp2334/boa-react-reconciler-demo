@@ -1,0 +1,228 @@
+import React from 'react';
+import ReactReconciler, { type HostConfig, type Reconciler } from 'react-reconciler';
+import { TreeManager } from './tree';
+import type {
+  UITreeNode,
+  UINodeType,
+  Type,
+  Props,
+  Container,
+  Instance,
+  TextInstance,
+  SuspenseInstance,
+  HydratableInstance,
+  FormInstance,
+  PublicInstance,
+  HostContext,
+  ChildSet,
+  TimeoutHandle,
+  NoTimeout,
+  TransitionStatus
+} from './types';
+
+export class VM {
+  private treeManager: TreeManager;
+  private reconciler!: Reconciler<Container, Instance, TextInstance, SuspenseInstance, FormInstance, PublicInstance>
+
+  constructor() {
+    this.treeManager = new TreeManager();
+    this.setupReconciler();
+  }
+
+  private setupReconciler(): void {
+    this.reconciler = ReactReconciler<Type,
+      Props,
+      Container,
+      Instance,
+      TextInstance,
+      SuspenseInstance,
+      HydratableInstance,
+      FormInstance,
+      PublicInstance,
+      HostContext,
+      ChildSet,
+      TimeoutHandle,
+      NoTimeout,
+      TransitionStatus
+    >({
+      // Required methods
+      getRootHostContext: (): HostContext => ({}),
+      getChildHostContext: (): HostContext => ({}),
+      prepareForCommit: () => null,
+      resetAfterCommit: () => { },
+      createInstance: (
+        type: Type,
+        props: Props,
+        _rootContainer: Container,
+        _hostContext: HostContext,
+        _internalHandle: any
+      ): Instance => {
+        const nodeType = this.getNodeType(type);
+        return this.treeManager.createNode(nodeType, props);
+      },
+      appendInitialChild: (parent: Instance, child: Instance): void => {
+        this.treeManager.addChild(parent, child);
+      },
+      appendChild: (parent: Instance, child: Instance): void => {
+        this.treeManager.addChild(parent, child);
+      },
+      appendChildToContainer: (container: Container, child: Instance): void => {
+        if (!container) {
+          this.treeManager.setRoot(child);
+        } else {
+          this.treeManager.addChild(container, child);
+        }
+      },
+      finalizeInitialChildren: () => false,
+      commitUpdate: (
+        instance: Instance,
+        _type: Type,
+        _prevProps: Props,
+        nextProps: Props,
+        _internalHandle: any
+      ): void => {
+        this.treeManager.updateNodeProps(instance.id, nextProps);
+      },
+      commitMount: () => { },
+      getPublicInstance: (instance: Instance): PublicInstance => instance,
+
+      // Text handling
+      shouldSetTextContent: (_type: Type, props: Props): boolean => {
+        return typeof props.children === 'string' || typeof props.children === 'number';
+      },
+      createTextInstance: (
+        text: string,
+        _rootContainer: Container,
+        _hostContext: HostContext,
+        _internalHandle: any
+      ): TextInstance => {
+        return this.treeManager.createNode('text', { text: String(text) });
+      },
+      commitTextUpdate: (textInstance: TextInstance, _oldText: string, newText: string): void => {
+        this.treeManager.updateNodeProps(textInstance.id, { text: String(newText) });
+      },
+
+      // Optional mutation methods
+      removeChild: (parent: Instance, child: Instance): void => {
+        this.treeManager.removeChild(parent, child.id);
+      },
+      removeChildFromContainer: (container: Container, child: Instance): void => {
+        if (container) {
+          this.treeManager.removeChild(container, child.id);
+        }
+      },
+      insertBefore: (parent: Instance, child: Instance, beforeChild: Instance): void => {
+        const index = parent.children.findIndex(c => c.id === beforeChild.id);
+        if (index !== -1) {
+          child.parent = parent;
+          parent.children.splice(index, 0, child);
+        }
+      },
+
+      // Required methods with minimal implementations
+      preparePortalMount: () => { },
+      scheduleTimeout: (fn: () => void, delay: number): TimeoutHandle => (setTimeout as any)(fn, delay),
+      cancelTimeout: (id: TimeoutHandle): void => clearTimeout(id),
+      noTimeout: -1 as NoTimeout,
+      isPrimaryRenderer: true,
+      warnsIfNotActing: false,
+      supportsHydration: false,
+      supportsPersistence: false,
+      supportsMutation: true,
+
+      // Additional required methods
+      getInstanceFromNode: () => null,
+      beforeActiveInstanceBlur: () => { },
+      afterActiveInstanceBlur: () => { },
+      prepareScopeUpdate: () => { },
+      getInstanceFromScope: () => null,
+      detachDeletedInstance: () => { },
+      getCurrentUpdatePriority: () => 0,
+      setCurrentUpdatePriority: () => { },
+      resetFormInstance: () => { },
+      requestPostPaintCallback: () => { },
+      NotPendingTransition: null,
+      HostTransitionContext: null as any,
+      resolveUpdatePriority: function (): ReactReconciler.EventPriority {
+        return 0
+      },
+      shouldAttemptEagerTransition: function (): boolean {
+        return false
+      },
+      trackSchedulerEvent: function (): void {
+      },
+      resolveEventType: function (): null | string {
+        return null
+      },
+      resolveEventTimeStamp: function (): number {
+        return 0
+      },
+      maySuspendCommit: function (type: string, props: Props): boolean {
+        return false
+      },
+      preloadInstance: function (type: string, props: Props): boolean {
+        return false
+      },
+      startSuspendingCommit: function (): void {
+      },
+      suspendInstance: function (type: string, props: Props): void {
+      },
+      waitForCommitToBeReady: function () {
+        return null
+      }
+    });
+  }
+
+  private getNodeType(type: string): UINodeType {
+    if (type === 'text') return 'text';
+    if (type === 'rect') return 'rect';
+    return 'rect'; // Default to rect for other elements
+  }
+
+  render(element: React.ReactElement): void {
+    let container = this.treeManager.getRoot();
+
+    // Create a dummy root container if none exists
+    if (!container) {
+      container = this.treeManager.createNode('rect', {});
+      this.treeManager.setRoot(container);
+    }
+
+    this.reconciler.updateContainer(element, container, null, null);
+  }
+
+  clear(): void {
+    const root = this.treeManager.getRoot();
+    if (root) {
+      this.treeManager.removeNode(root.id);
+      this.treeManager.setRoot(null);
+    }
+  }
+
+  getTreeManager(): TreeManager {
+    return this.treeManager;
+  }
+
+  getTreeNode(id: string): UITreeNode | undefined {
+    return this.treeManager.findNode(id);
+  }
+
+  dumpTree(): string {
+    const root = this.treeManager.getRoot();
+    if (!root) return 'Empty tree';
+
+    const dumpNode = (node: UITreeNode, depth: number = 0): string => {
+      const indent = '  '.repeat(depth);
+      const propsStr = Object.keys(node.props).length > 0
+        ? ` ${JSON.stringify(node.props)}`
+        : '';
+      const childStr = node.children.length > 0
+        ? '\n' + node.children.map(child => dumpNode(child, depth + 1)).join('\n')
+        : '';
+
+      return `${indent}${node.type}${propsStr}${childStr}`;
+    };
+
+    return dumpNode(root);
+  }
+}
