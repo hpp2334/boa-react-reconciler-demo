@@ -1,0 +1,32 @@
+{
+  "name": "@brrd/prelude",
+  "version": "1.0.0",
+  "description": "UMD build of React and React Reconciler bound to globalThis",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rspack build",
+    "dev": "rspack build --watch"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "react-reconciler",
+    "umd",
+    "global"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-reconciler": "^0.29.0"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^1.5.8",
+    "@rspack/core": "^1.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-reconciler": "^0.32.2",
+    "typescript": "^5.0.0"
+  }
+}

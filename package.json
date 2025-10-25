@@ -3,16 +3,13 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "build": "bun run build --filter=*",
-    "dev": "bun run dev --filter=*",
-    "test": "bun test"
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "typescript": "^5"
   },
   "peerDependencies": {
     "typescript": "^5"
