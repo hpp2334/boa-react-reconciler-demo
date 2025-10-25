@@ -98,15 +98,21 @@ export class TreeManager {
   }
 
   private formatProps(props: UINodeProps): string {
-    const entries = Object.entries(props)
-      .filter(([, value]) => value !== undefined && value !== null)
-      .map(([key, value]) => {
-        if (typeof value === 'string') {
-          return `${key}="${value}"`;
-        } else {
-          return `${key}=${JSON.stringify(value)}`;
-        }
-      });
+    const entries: string[] = []
+    const emit = (key: keyof UINodeProps) => {
+      const value = props[key]
+      if (value) {
+        entries.push(`${key}=${JSON.stringify(value)}`)
+      }
+    }
+
+    emit('x')
+    emit('y')
+    emit('width')
+    emit('height')
+    emit('backgroundColor')
+    emit('color')
+    emit('text')
 
     return entries.length > 0 ? ` ${entries.join(' ')}` : '';
   }
