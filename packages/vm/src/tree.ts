@@ -1,4 +1,4 @@
-import type { UITreeNode, UITree, UINodeType, UINodeId, UINodeProps } from './types';
+import type { UITreeNode, UITree, UINodeType, UINodeId, UINodeProps, UINodeDrawable } from './types';
 
 export class TreeManager {
   private tree: UITree = {
@@ -85,6 +85,30 @@ export class TreeManager {
         return `Node ${nodeId} not found`;
       }
       return this.formatNode(node, 0);
+  }
+
+  getDrawable(nodeId: UINodeId): UINodeDrawable {
+    const node = this.tree.nodes.get(nodeId);
+    if (!node) {
+      throw Error(`Node ${nodeId} not found`)
+    }
+
+    return this.convertToDrawable(node);
+  }
+
+  private convertToDrawable(node: UITreeNode): UINodeDrawable {
+    const drawable: UINodeDrawable = {
+      type: node.type,
+      props: { ...node.props },
+      children: []
+    };
+
+    // Convert children recursively
+    for (const child of node.children) {
+      drawable.children.push(this.convertToDrawable(child));
+    }
+
+    return drawable;
   }
 
   private formatNode(node: UITreeNode, indent: number): string {

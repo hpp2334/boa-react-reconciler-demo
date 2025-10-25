@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { TreeManager } from '../tree';
 import React, { act } from 'react';
 import { VM } from '../vm';
+import type { UINodeDrawable } from '@brrd/types';
 
 describe('VM', () => {
   let vm: VM;

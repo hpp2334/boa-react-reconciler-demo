@@ -235,4 +235,8 @@ export class VM {
   snapshot(nodeId: UINodeId): string {
     return this.treeManager.snapshot(nodeId);
   }
+  
+  getDrawable(nodeId: UINodeId) {
+    return this.treeManager.getDrawable(nodeId)
+  }
 }

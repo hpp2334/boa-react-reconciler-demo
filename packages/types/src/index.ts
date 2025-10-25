@@ -16,3 +16,9 @@ export interface UINodeProps {
     backgroundColor?: string
     children?: React.ReactNode[]
 }
+
+export interface UINodeDrawable {
+    type: UINodeType
+    props: UINodeProps
+    children: UINodeDrawable[]
+}
