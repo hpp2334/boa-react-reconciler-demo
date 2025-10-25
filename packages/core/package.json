@@ -3,7 +3,7 @@
   "module": "./dist/index.js",
   "private": false,
   "scripts": {
-    "build": "tsc && rspack build"
+    "build": "pnpm -F vm build && pnpm -F vm prelude && tsc && rspack build"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

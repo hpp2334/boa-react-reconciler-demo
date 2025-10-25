@@ -17,6 +17,9 @@ importers:
       '@brrd/prelude':
         specifier: workspace:*
         version: link:../prelude
+      '@brrd/vm':
+        specifier: workspace:*
+        version: link:../vm
     devDependencies:
       '@rspack/cli':
         specifier: ^1.5.8

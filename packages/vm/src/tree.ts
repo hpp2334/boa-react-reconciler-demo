@@ -143,6 +143,6 @@ export class TreeManager {
   }
 
   private generateId(): UINodeId {
-    return `node_${Date.now()}_${Math.random().toString(36).substring(2, 11)}` as UINodeId;
+    return `node_${Math.random().toString(36).substring(2, 11)}` as UINodeId;
   }
 }

@@ -1,7 +1,7 @@
 import * as React from "react";
-import * as ReactReconciler from "react-reconciler";
+import ReactReconciler from "react-reconciler";
 
-export function prelude() {
+export function setup() {
     const g = globalThis as any
 
     g.React = React;

@@ -5,15 +5,17 @@ const config: any = defineConfig({
   output: {
     filename: 'index.js',
     library: {
-      type: 'module'
-    }
+      type: 'umd',
+      name: 'BrrdVM',
+    },
+    globalObject: 'globalThis',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   externals: {
-    'react': 'globalThis.React',
-    'react-reconciler': 'globalThis.ReactReconciler'
+    'react': 'React',
+    'react-reconciler': 'ReactReconciler'
   },
   module: {
     rules: [
