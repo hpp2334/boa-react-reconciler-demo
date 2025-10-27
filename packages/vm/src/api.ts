@@ -8,6 +8,10 @@ export const createRoot = (): UINodeId => {
     return vm.createRoot()
 }
 
+export const removeRoot = (id: UINodeId) => {
+    vm.clear(id)
+}
+
 export const render = (rootId: UINodeId, compiledCode: string) => {
     const f = new Function('React', compiledCode) as (r: typeof React) => React.ReactElement
     const el = f(React)
