@@ -14,9 +14,15 @@ importers:
 
   packages/core:
     dependencies:
+      '@brrd/types':
+        specifier: workspace:*
+        version: link:../types
       '@brrd/vm':
         specifier: workspace:*
         version: link:../vm
+      js-base64:
+        specifier: ^3.7.8
+        version: 3.7.8
     devDependencies:
       '@rspack/cli':
         specifier: ^1.5.8
@@ -24,6 +30,9 @@ importers:
       '@rspack/core':
         specifier: ^1.0.0
         version: 1.5.8(@swc/helpers@0.5.17)
+      '@types/react':
+        specifier: ^19.2.2
+        version: 19.2.2
       '@types/react-reconciler':
         specifier: ^0.32.2
         version: 0.32.2(@types/react@19.2.2)
@@ -67,6 +76,9 @@ importers:
       '@brrd/types':
         specifier: workspace:*
         version: link:../types
+      js-base64:
+        specifier: ^3.7.8
+        version: 3.7.8
     devDependencies:
       '@rspack/cli':
         specifier: ^1.5.8
@@ -1226,6 +1238,9 @@ packages:
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
+
+  js-base64@3.7.8:
+    resolution: {integrity: sha512-hNngCeKxIUQiEUN3GPJOkz4wF/YvdUdbNL9hsBcMQTkKzboD7T/q3OYOuuPZLUE6dBxSGpwhk5mwuDud7JVAow==}
 
   jsdom@27.0.1:
     resolution: {integrity: sha512-SNSQteBL1IlV2zqhwwolaG9CwhIhTvVHWg3kTss/cLE7H/X4644mtPQqYvCfsSrGQWt9hSZcgOXX8bOZaMN+kA==}
@@ -3002,6 +3017,8 @@ snapshots:
 
   jiti@2.6.1:
     optional: true
+
+  js-base64@3.7.8: {}
 
   jsdom@27.0.1(postcss@8.5.6):
     dependencies:

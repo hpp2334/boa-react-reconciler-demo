@@ -1,3 +1,4 @@
+use swc_core::binding_macros::build_transform_sync;
 use wasm_bindgen::prelude::*;
 use boa_engine::{Context, Source};
 
@@ -25,8 +26,16 @@ impl BoaContext {
 
     #[wasm_bindgen]
     pub fn evaluate(&mut self, s: &str) -> Result<String, JsValue> {
-        self.context.eval(Source::from_bytes(s))
-        .map_err(|e| JsValue::from(format!("Uncaught {e}")))
-        .map(|v| v.display().to_string())
+        let r = self.context.eval(Source::from_bytes(s));
+        match r {
+            Ok(r) => Ok(r.to_string(&mut self.context).expect("failed to string").to_std_string().expect("failed to std string")),
+            Err(e) => Err(JsValue::from(format!("Uncaught {e}")))
+        }
     }
 }
+
+#[wasm_bindgen(typescript_custom_section)]
+const INTERFACE_DEFINITIONS: &'static str = r#"
+export function transformSync(code: string, opts?: unknown, experimental_plugin_bytes_resolver?: any): { code: string; map?: string; };
+"#;
+build_transform_sync!(#[wasm_bindgen(js_name = "transformSync", typescript_type = "transformSync",skip_typescript)]);

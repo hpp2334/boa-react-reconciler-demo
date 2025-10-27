@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "Preserve",
     "moduleDetection": "force",
@@ -9,6 +9,7 @@
     "allowJs": true,
 
     // Bundler mode
+    "rootDir": "src",
     "outDir": "dist",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
