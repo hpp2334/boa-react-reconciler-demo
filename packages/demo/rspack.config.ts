@@ -1,26 +1,27 @@
-import { defineConfig } from '@rspack/cli';
+import { defineConfig } from '@rspack/cli'
+import { HtmlRspackPlugin } from '@rspack/core'
 
-const config: any = defineConfig({
-  entry: './src/index.ts',
-  output: {
-    filename: 'index.js',
-    library: {
-      type: 'module'
-    }
-  },
+module.exports = defineConfig({
+  entry: './src/main.tsx',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: {
           loader: 'builtin:swc-loader',
           options: {
             jsc: {
               parser: {
                 syntax: 'typescript',
+                tsx: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                },
               },
               target: 'es2020',
             },
@@ -29,37 +30,44 @@ const config: any = defineConfig({
         exclude: /node_modules/,
       },
       {
-        test: /\.js$/,
-        include: /node_modules/,
+        test: /\.jsx?$/,
         use: {
           loader: 'builtin:swc-loader',
           options: {
             jsc: {
               parser: {
                 syntax: 'ecmascript',
+                jsx: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                },
               },
               target: 'es2020',
             },
           },
         },
-      },
-      {
-        resourceQuery: /raw/,
-        type: 'asset/source',
+        exclude: /node_modules/,
       },
       {
         test: /\.wasm$/,
         type: 'webassembly/async',
       },
+      {
+        resourceQuery: /raw/,
+        type: 'asset/source',
+      },
     ],
   },
+  plugins: [
+    new HtmlRspackPlugin()
+  ],
+  devServer: {
+    port: 3001,
+  },
   experiments: {
+    css: true,
     asyncWebAssembly: true,
-    outputModule: true
-  },
-  optimization: {
-    minimize: false,
-  },
-  devtool: false,
+  }
 })
-export default config;

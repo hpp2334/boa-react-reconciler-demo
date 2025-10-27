@@ -1,0 +1,25 @@
+{
+  "name": "@brrd/demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "rspack serve",
+    "build": "tsc && rspack build",
+    "preview": "rspack preview"
+  },
+  "dependencies": {
+    "@brrd/types": "workspace:*",
+    "@brrd/vm": "workspace:*",
+    "@monaco-editor/react": "^4.6.0",
+    "js-base64": "^3.7.8",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^1.5.8",
+    "@rspack/core": "^1.0.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.7.2"
+  }
+}

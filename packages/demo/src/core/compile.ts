@@ -1,4 +1,4 @@
-import { transformSync } from "../../../boa-wasm/pkg/boa_wasm";
+import { transformSync } from "../../../../boa-wasm/pkg/boa_wasm";
 
 const settings = {
     jsc: {

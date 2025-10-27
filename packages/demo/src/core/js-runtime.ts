@@ -1,4 +1,4 @@
-import { BoaContext } from "../../../boa-wasm/pkg/boa_wasm";
+import { BoaContext } from "../../../../boa-wasm/pkg/boa_wasm";
 import vmCode from '@brrd/vm?raw'
 import type { UINodeDrawable, UINodeId } from "@brrd/types";
 import { compileTSX } from "./compile";
