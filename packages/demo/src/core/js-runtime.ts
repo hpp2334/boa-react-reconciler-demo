@@ -19,7 +19,8 @@ export class JsRuntime {
     }
 
     createRoot(): UINodeId {
-        return this.evaluate("BrrdVM.createRoot()")
+        const id = this.evaluate("BrrdVM.createRoot()")
+        return id
     }
 
     removeRoot(id: UINodeId) {
@@ -27,7 +28,13 @@ export class JsRuntime {
     }
 
     render(id: UINodeId, code: string) {
-        const compiled = compileTSX(code)
+        const compiled = compileTSX(`
+(function () {
+${code}
+
+return <App />
+})()
+`)
         const v = `BrrdVM.render("${id}", BrrdVM.fromBase64("${toBase64(compiled)}"))`
         this.evaluate(v)
     }
