@@ -21,8 +21,7 @@ const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
       ...baseStyle,
       display: 'flex',
       flexDirection: type === 'row' ? 'row' : 'column',
-      gap: '4px',
-      padding: '4px'
+      gap: props.gap !== undefined ? `${props.gap}px` : undefined,
     }
 
     // Handle different node types

@@ -10,6 +10,7 @@ export interface UINodeProps {
     text?: string
     color?: string
     backgroundColor?: string
+    gap?: number
     children?: React.ReactNode[]
 }
 
