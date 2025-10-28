@@ -51,6 +51,11 @@ module.exports = defineConfig({
         exclude: /node_modules/,
       },
       {
+        test: /\.css$/i,
+        use: ['postcss-loader'],
+        type: 'css',
+      },
+      {
         test: /\.wasm$/,
         type: 'webassembly/async',
       },

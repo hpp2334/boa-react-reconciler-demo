@@ -10,7 +10,11 @@ const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
     const { type, props, children } = node
 
     // Convert UINodeDrawable props to React props
-    const reactProps: React.HTMLAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLSpanElement> = {}
+    const reactProps: React.HTMLAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLSpanElement> = {
+      style: {
+        position: 'absolute'
+      }
+    }
 
     if (props.width !== undefined) reactProps.style = { ...reactProps.style, width: props.width }
     if (props.height !== undefined) reactProps.style = { ...reactProps.style, height: props.height }

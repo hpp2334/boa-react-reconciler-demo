@@ -15,18 +15,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   height = '100%',
 }) => {
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{
-        padding: '10px 15px',
-        backgroundColor: '#f8f9fa',
-        borderBottom: '1px solid #e1e5e9',
-        fontSize: '14px',
-        fontWeight: '500',
-        color: '#495057'
-      }}>
+    <div className="h-full flex flex-col">
+      <div className="px-4 py-2.5 bg-gray-100 border-b border-gray-200 text-sm font-medium text-gray-600">
         Code Editor
       </div>
-      <div style={{ flex: 1 }}>
+      <div className="flex-1">
         <Editor
           height={height}
           language={language}

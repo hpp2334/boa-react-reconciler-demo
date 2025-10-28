@@ -11,23 +11,15 @@ const PresetSelector: React.FC<PresetSelectorProps> = ({
   onPresetChange,
 }) => {
   return (
-    <div className="preset-selector">
-      <label htmlFor="preset-select" style={{ marginRight: '10px', fontWeight: '500' }}>
+    <div className="flex items-center gap-2">
+      <label htmlFor="preset-select" className="font-medium text-gray-700">
         Examples:
       </label>
       <select
         id="preset-select"
         value={selectedPreset}
-        onChange={(e) => onPresetChange(e.target.value)}
-        style={{
-          padding: '8px 12px',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
-          backgroundColor: '#ffffff',
-          fontSize: '14px',
-          cursor: 'pointer',
-          minWidth: '200px'
-        }}
+        onChange={(e) => onPresetChange((e.target as HTMLSelectElement).value)}
+        className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm cursor-pointer min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
         {Object.entries(PRESET_EXAMPLES).map(([key, preset]) => (
           <option key={key} value={key}>

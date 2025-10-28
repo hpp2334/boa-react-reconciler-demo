@@ -8,39 +8,18 @@ interface PreviewProps {
 
 const Preview: React.FC<PreviewProps> = ({ drawable }) => {
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{
-        padding: '10px 15px',
-        backgroundColor: '#f8f9fa',
-        borderBottom: '1px solid #e1e5e9',
-        fontSize: '14px',
-        fontWeight: '500',
-        color: '#495057'
-      }}>
+    <div className="h-full flex flex-col">
+      <div className="px-4 py-2.5 bg-gray-100 border-b border-gray-200 text-sm font-medium text-gray-600">
         Preview
       </div>
-      <div
-        style={{
-          flex: 1,
-          padding: '20px',
-          overflow: 'auto',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start'
-        }}
-      >
+      <div className="flex-1 p-5 overflow-auto flex justify-start items-start">
         {drawable ? (
           <DynComponent drawable={drawable} />
         ) : (
-          <div style={{
-            textAlign: 'center',
-            color: '#6c757d',
-            fontSize: '16px',
-            marginTop: '40px'
-          }}>
-            <div style={{ marginBottom: '10px' }}>⚠️</div>
+          <div className="text-center text-gray-500 text-base mt-10">
+            <div className="mb-2.5 text-2xl">⚠️</div>
             <div>Code compilation failed or has errors</div>
-            <div style={{ fontSize: '14px', marginTop: '10px' }}>
+            <div className="text-sm mt-2.5">
               Check the console for more details
             </div>
           </div>
