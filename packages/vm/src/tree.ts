@@ -79,14 +79,6 @@ export class TreeManager {
     };
   }
 
-  snapshot(nodeId: UINodeId): string {
-      const node = this.tree.nodes.get(nodeId);
-      if (!node) {
-        return `Node ${nodeId} not found`;
-      }
-      return this.formatNode(node, 0);
-  }
-
   getDrawable(nodeId: UINodeId): UINodeDrawable {
     const node = this.tree.nodes.get(nodeId);
     if (!node) {
@@ -110,36 +102,6 @@ export class TreeManager {
     }
 
     return drawable;
-  }
-
-  private formatNode(node: UITreeNode, indent: number): string {
-    const spaces = '  '.repeat(indent);
-    const propsStr = this.formatProps(node.props);
-    const childrenStr = node.children.length > 0
-      ? '\n' + node.children.map(child => this.formatNode(child, indent + 1)).join('\n')
-      : '';
-
-    return `${spaces}<${node.type}${propsStr}>${childrenStr}`;
-  }
-
-  private formatProps(props: UINodeProps): string {
-    const entries: string[] = []
-    const emit = (key: keyof UINodeProps) => {
-      const value = props[key]
-      if (value) {
-        entries.push(`${key}=${JSON.stringify(value)}`)
-      }
-    }
-
-    emit('x')
-    emit('y')
-    emit('width')
-    emit('height')
-    emit('backgroundColor')
-    emit('color')
-    emit('text')
-
-    return entries.length > 0 ? ` ${entries.join(' ')}` : '';
   }
 
   private generateId(): UINodeId {

@@ -9,36 +9,53 @@ const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
   const renderNode = (node: UINodeDrawable): React.ReactNode => {
     const { type, props, children } = node
 
-    // Convert UINodeDrawable props to React props
-    const reactProps: React.HTMLAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLSpanElement> = {
-      style: {
-        position: 'absolute'
-      }
+    // Base styles for all nodes
+    const baseStyle: React.CSSProperties = {}
+
+    // Apply color and background color if present
+    if (props.color) baseStyle.color = props.color
+    if (props.backgroundColor) baseStyle.backgroundColor = props.backgroundColor
+
+    // Container styles for row/column layout
+    const containerStyle: React.CSSProperties = {
+      ...baseStyle,
+      display: 'flex',
+      flexDirection: type === 'row' ? 'row' : 'column',
+      gap: '4px',
+      padding: '4px'
     }
 
-    if (props.width !== undefined) reactProps.style = { ...reactProps.style, width: props.width }
-    if (props.height !== undefined) reactProps.style = { ...reactProps.style, height: props.height }
-    if (props.x !== undefined) reactProps.style = { ...reactProps.style, position: 'absolute', left: props.x }
-    if (props.y !== undefined) reactProps.style = { ...reactProps.style, position: 'absolute', top: props.y }
-    if (props.text !== undefined) reactProps.children = props.text
-    if (props.color !== undefined) reactProps.style = { ...reactProps.style, color: props.color }
-    if (props.backgroundColor !== undefined) reactProps.style = { ...reactProps.style, backgroundColor: props.backgroundColor }
-
     // Handle different node types
-    if (type === 'text') {
-      return (
-        <span key={node.id} {...reactProps}>
-          {props.text || ''}
-          {children.map(renderNode)}
-        </span>
-      )
-    } else {
-      // Default to div for 'rect' and other types
-      return (
-        <div key={node.id} {...reactProps}>
-          {children.map(renderNode)}
-        </div>
-      )
+    switch (type) {
+      case 'text':
+        return (
+          <span key={node.id} style={baseStyle}>
+            {props.text || ''}
+            {children.map(renderNode)}
+          </span>
+        )
+
+      case 'row':
+        return (
+          <div key={node.id} style={containerStyle}>
+            {children.map(renderNode)}
+          </div>
+        )
+
+      case 'column':
+        return (
+          <div key={node.id} style={containerStyle}>
+            {children.map(renderNode)}
+          </div>
+        )
+
+      default:
+        // Fallback for any unexpected types
+        return (
+          <div key={node.id} style={baseStyle}>
+            {children.map(renderNode)}
+          </div>
+        )
     }
   }
 

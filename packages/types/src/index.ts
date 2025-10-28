@@ -4,13 +4,9 @@ import type React from "react";
 export type UINodeId = string;
 
 // Node type definitions
-export type UINodeType = 'rect' | 'text';
+export type UINodeType = 'row' | 'column' | 'text';
 
 export interface UINodeProps {
-    width?: number
-    height?: number
-    x?: number
-    y?: number
     text?: string
     color?: string
     backgroundColor?: string

@@ -187,12 +187,13 @@ export class VM {
 
   private getNodeType(type: string): UINodeType {
     if (type === 'text') return 'text';
-    if (type === 'rect') return 'rect';
-    return 'rect'; // Default to rect for other elements
+    if (type === 'row') return 'row';
+    if (type === 'column') return 'column'
+    return 'column'
   }
 
   createRoot(): UINodeId {
-    const root = this.treeManager.createNode('rect', {})
+    const root = this.treeManager.createNode('column', {})
     const reactRoot = this.reconciler.createContainer(
       root,
       0,
@@ -230,10 +231,6 @@ export class VM {
 
   clear(nodeId: UINodeId): void {
     this.treeManager.removeNode(nodeId);
-  }
-
-  snapshot(nodeId: UINodeId): string {
-    return this.treeManager.snapshot(nodeId);
   }
   
   getDrawable(nodeId: UINodeId) {
