@@ -1,5 +1,5 @@
 import React from 'react'
-import { PRESET_EXAMPLES } from '../presets'
+import { getAllPresets, getPresetConfig } from '../presets'
 
 interface PresetSelectorProps {
   selectedPreset: string
@@ -21,11 +21,13 @@ const PresetSelector: React.FC<PresetSelectorProps> = ({
         onChange={(e) => onPresetChange((e.target as HTMLSelectElement).value)}
         className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm cursor-pointer min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
-        {Object.entries(PRESET_EXAMPLES).map(([key, preset]) => (
-          <option key={key} value={key}>
-            {preset.name} - {preset.description}
+        {getAllPresets().map((preset) => {
+          const conf = getPresetConfig(preset)
+
+          return <option key={preset} value={preset}>
+            {conf.name} -{conf.description}
           </option>
-        ))}
+        })}
       </select>
     </div>
   )

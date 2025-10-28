@@ -4,11 +4,12 @@ import type { UINodeDrawable } from '@brrd/types'
 import CodeEditor from './components/CodeEditor'
 import Preview from './components/Preview'
 import PresetSelector from './components/PresetSelector'
-import { PRESET_EXAMPLES } from './presets'
+import "./presets"
+import { getPresetConfig, isPreset, Preset } from './presets'
 
 const App: React.FC = () => {
-  const [selectedPreset, setSelectedPreset] = useState<string>('counter')
-  const [code, setCode] = useState<string>(PRESET_EXAMPLES[selectedPreset]?.code || '')
+  const [selectedPreset, setSelectedPreset] = useState<Preset>('counter')
+  const [code, setCode] = useState<string>(getPresetConfig(selectedPreset).code)
   const [runtime] = useState(() => new JsRuntime())
   const [rootId] = useState(() => runtime.createRoot())
   const [drawable, setDrawable] = useState<UINodeDrawable | null>(null)
@@ -33,8 +34,10 @@ const App: React.FC = () => {
   }, [code, runtime, rootId])
 
   const handlePresetChange = (presetKey: string) => {
-    setSelectedPreset(presetKey)
-    setCode(PRESET_EXAMPLES[presetKey]?.code || '')
+    if (isPreset(presetKey)) {
+      setSelectedPreset(presetKey)
+      setCode(getPresetConfig(presetKey).code)
+    }
   }
 
   const handleCodeChange = (newCode: string) => {

@@ -1,0 +1,22 @@
+import { Config } from "./impl/type"
+
+const cx = require.context("./impl", false)
+
+const presets = ["counter"] as const
+
+export type Preset = typeof presets[0]
+
+export function getPresetConfig(p: Preset): Config {
+    const v = cx(`./${p}`) as {
+        default: Config
+    }
+    return v.default
+}
+
+export function getAllPresets(): ReadonlyArray<Preset> {
+    return presets
+}
+
+export function isPreset(preset: string): preset is Preset {
+    return (presets as ReadonlyArray<string>).includes(preset)
+}

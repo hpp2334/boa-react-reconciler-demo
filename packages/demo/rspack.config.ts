@@ -30,27 +30,6 @@ module.exports = defineConfig({
         exclude: /node_modules/,
       },
       {
-        test: /\.jsx?$/,
-        use: {
-          loader: 'builtin:swc-loader',
-          options: {
-            jsc: {
-              parser: {
-                syntax: 'ecmascript',
-                jsx: true,
-              },
-              transform: {
-                react: {
-                  runtime: 'automatic',
-                },
-              },
-              target: 'es2020',
-            },
-          },
-        },
-        exclude: /node_modules/,
-      },
-      {
         test: /\.css$/i,
         use: ['postcss-loader'],
         type: 'css',
