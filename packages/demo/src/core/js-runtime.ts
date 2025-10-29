@@ -4,17 +4,53 @@ import type { UINodeDrawable, UINodeId } from "@brrd/types";
 import { compileTSX } from "./compile";
 import { toBase64 } from "js-base64";
 
+const onTimeoutHandlers: Set<(cx_id: number, f: any) => void> = new Set();
+
+const finalizationRegistry = new FinalizationRegistry((heldValue: () => void) => {
+    heldValue();
+});
+
+(() => {
+    const g = globalThis as any
+
+    g.bc_date_now = () => {
+        return Date.now()
+    }
+    g.bc_set_timeout = (cx_id: number, f: any, ms: number) => {
+        setTimeout(() => {
+            for (const cb of onTimeoutHandlers) {
+                cb(cx_id, f)
+            }
+        }, ms)
+    }
+    g.bc_clear_timeout = (id: any) => {
+        clearTimeout(id)
+    }
+})()
+
 export class JsRuntime {
     private _cx = new BoaContext()
 
-    constructor() {
+    constructor(private afterTimeout: () => void) {
         this.initializeContext()
+
+        const onTimeout = this.onTimeout
+        onTimeoutHandlers.add(onTimeout)
+        finalizationRegistry.register(this, () => {
+            onTimeoutHandlers.delete(onTimeout)
+        })
     }
 
+    private onTimeout = (cx_id: number, f: any) => {
+        if (cx_id === this._cx.id()) {
+            this._cx.invoke_on_timeout(f)
+            this.afterTimeout()
+        }
+    }
+
+  
     private initializeContext() {
-        this.evaluate("Date.now = () => { return 0 }")
-        this.evaluate("globalThis.setTimeout = () => {}")
-        this.evaluate("globalThis.cancelTimeout = () => {}")
+        this.evaluate("Date.now = () => { return _DateNow() }")
         this.evaluate(vmCode)
     }
 
