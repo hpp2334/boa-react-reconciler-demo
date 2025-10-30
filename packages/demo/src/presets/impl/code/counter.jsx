@@ -1,3 +1,4 @@
+const { useState } = React
 
 function Button(props) {
     return (
@@ -9,9 +10,12 @@ function Button(props) {
 }
 
 function App() {
+    const [v, setV] = useState(0)
+
     return (
         <column>
             <text>Counter</text>
+            <text>{v}</text>
             <Button prefix="+" text="Increment" />
             <Button prefix="-" text="Decrement" />
         </column>

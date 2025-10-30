@@ -12,14 +12,12 @@ export function useDrawable(code: string): UINodeDrawable | null {
         const rootId = rootIdRef.current
 
         const newDrawable = runtime.getDrawable(rootId)
-        console.log(newDrawable)
         setDrawable(newDrawable)
     }, [])
 
     useEffect(() => {
         const runtime = rtRef.current
         runtime.setAfterTimeout(() => {
-            console.log("on timeout!")
             updateDrawable()
         })
 

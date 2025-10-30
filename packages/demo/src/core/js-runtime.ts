@@ -17,7 +17,6 @@ const finalizationRegistry = new FinalizationRegistry((heldValue: () => void) =>
         return Date.now()
     }
     g.bc_set_timeout = (cx_id: number, f: any, ms: number) => {
-        console.log("bc_set_timeout", cx_id, f)
         setTimeout(() => {
             for (const cb of onTimeoutHandlers) {
                 cb(cx_id, f)

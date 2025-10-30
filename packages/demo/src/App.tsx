@@ -36,7 +36,7 @@ const App: React.FC = () => {
           <CodeEditor
             value={code}
             onChange={handleCodeChange}
-            language='typescript'
+            language='jsx'
           />
         </div>
         <div className="flex-1 bg-gray-50 flex flex-col">
