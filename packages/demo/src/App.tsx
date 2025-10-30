@@ -1,37 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { JsRuntime } from './core/js-runtime'
-import type { UINodeDrawable } from '@brrd/types'
+import React, { useState } from 'react'
 import CodeEditor from './components/CodeEditor'
 import Preview from './components/Preview'
 import PresetSelector from './components/PresetSelector'
 import "./presets"
 import { getPresetConfig, isPreset, Preset } from './presets'
+import { useDrawable } from './core/ui'
 
 const App: React.FC = () => {
   const [selectedPreset, setSelectedPreset] = useState<Preset>('counter')
   const [code, setCode] = useState<string>(getPresetConfig(selectedPreset).code)
-  const [runtime] = useState(() => new JsRuntime())
-  const rootIdRef = useRef<string>("")
-  const [drawable, setDrawable] = useState<UINodeDrawable | null>(null)
-
-
-  useEffect(() => {
-    const rootId = runtime.createRoot()
-    rootIdRef.current = rootId
-
-    try {
-      runtime.render(rootId, code)
-      const newDrawable = runtime.getDrawable(rootId)
-      setDrawable(newDrawable)
-    } catch (error) {
-      console.error('Error rendering code:', error)
-      setDrawable(null)
-    }
-
-    return () => {
-      runtime.removeRoot(rootId)
-    }
-  }, [code, runtime])
+  const drawable = useDrawable(code)
 
   const handlePresetChange = (presetKey: string) => {
     if (isPreset(presetKey)) {

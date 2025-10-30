@@ -22,9 +22,6 @@ import type {
   TransitionStatus
 } from './types';
 
-declare const setTimeout: (fn: (...args: any[]) => any, ms: number) => number
-declare const clearTimeout: (handle: number) => void
-
 export class VM {
   private treeManager: TreeManager;
   private reconciler!: Reconciler<Container, Instance, TextInstance, SuspenseInstance, FormInstance, PublicInstance>;

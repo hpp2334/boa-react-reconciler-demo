@@ -16,6 +16,8 @@ fn _start() {
 
 #[wasm_bindgen]
 extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
     fn bc_set_timeout(cx_id: i32, value: BindgenBoaJsFunc, ms: u32) -> u32;
     fn bc_clear_timeout(handle: u32);
     fn bc_date_now() -> u32;
@@ -52,7 +54,7 @@ fn nf_set_timeout(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], cx:
     Ok(boa_engine::JsValue::from(handle))
 }
 
-fn nf_clear_timeout(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], cx: &mut Context) -> boa_engine::JsResult<boa_engine::JsValue> {
+fn nf_clear_timeout(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], _cx: &mut Context) -> boa_engine::JsResult<boa_engine::JsValue> {
     if args.len() == 1 {
         let arg = args.first().unwrap();
         let arg = arg.as_i32();
@@ -63,11 +65,20 @@ fn nf_clear_timeout(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], c
     Ok(boa_engine::JsValue::null())
 }
 
-fn nf_date_now(_this: &boa_engine::JsValue, _args: &[boa_engine::JsValue], cx: &mut Context) -> boa_engine::JsResult<boa_engine::JsValue> {
+fn nf_date_now(_this: &boa_engine::JsValue, _args: &[boa_engine::JsValue], _cx: &mut Context) -> boa_engine::JsResult<boa_engine::JsValue> {
     let v = bc_date_now();
     Ok(boa_engine::JsValue::from(v as f64))
 }
 
+fn nf_log(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], _cx: &mut Context) -> boa_engine::JsResult<boa_engine::JsValue> {
+    if let Some(msg) = args.get(0) {
+        if let Some(s) = msg.as_string() {
+            let s = s.to_std_string().unwrap_or_default();
+            log(s.as_str());
+        }
+    }
+    Ok(boa_engine::JsValue::null())
+}
 
 fn build_context() -> Context {
     let mut cx = Context::default();
@@ -80,6 +91,7 @@ fn build_context() -> Context {
     cx.register_global_builtin_callable(js_string!("setTimeout"), 2, NativeFunction::from_fn_ptr(nf_set_timeout)).expect("failed to create setTimeout fuc");
     cx.register_global_builtin_callable(js_string!("clearTimeout"), 1, NativeFunction::from_fn_ptr(nf_clear_timeout)).expect("failed to create clearTimeout fuc");
     cx.register_global_builtin_callable(js_string!("_DateNow"), 0, NativeFunction::from_fn_ptr(nf_date_now)).expect("failed to create _DateNow func");
+    cx.register_global_builtin_callable(js_string!("log"), 1, NativeFunction::from_fn_ptr(nf_log)).expect("failed to create log func");
     cx
 }
 

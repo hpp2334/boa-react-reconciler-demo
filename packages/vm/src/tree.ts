@@ -69,10 +69,6 @@ export class TreeManager {
     return this.tree.nodes.get(id);
   }
 
-  findNodeByType(type: string): UITreeNode[] {
-    return Array.from(this.tree.nodes.values()).filter((node: UITreeNode) => node.type === type);
-  }
-
   getTree(): UITree {
     return {
       nodes: new Map(this.tree.nodes)

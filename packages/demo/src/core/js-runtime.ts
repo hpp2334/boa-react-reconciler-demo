@@ -17,6 +17,7 @@ const finalizationRegistry = new FinalizationRegistry((heldValue: () => void) =>
         return Date.now()
     }
     g.bc_set_timeout = (cx_id: number, f: any, ms: number) => {
+        console.log("bc_set_timeout", cx_id, f)
         setTimeout(() => {
             for (const cb of onTimeoutHandlers) {
                 cb(cx_id, f)
@@ -30,8 +31,9 @@ const finalizationRegistry = new FinalizationRegistry((heldValue: () => void) =>
 
 export class JsRuntime {
     private _cx = new BoaContext()
+    private _afterTimeout: (() => void) | null = null
 
-    constructor(private afterTimeout: () => void) {
+    constructor() {
         this.initializeContext()
 
         const onTimeout = this.onTimeout
@@ -41,10 +43,14 @@ export class JsRuntime {
         })
     }
 
+    setAfterTimeout(f: (() => void) | null) {
+        this._afterTimeout = f
+    }
+
     private onTimeout = (cx_id: number, f: any) => {
         if (cx_id === this._cx.id()) {
             this._cx.invoke_on_timeout(f)
-            this.afterTimeout()
+            this._afterTimeout?.()
         }
     }
 
@@ -71,7 +77,7 @@ ${code}
 return <App />
 })()
 `)
-        const v = `BrrdVM.render("${id}", BrrdVM.fromBase64("${toBase64(compiled)}"))`
+        const v = `BrrdVM.render("${id}", "return " + BrrdVM.fromBase64("${toBase64(compiled)}"))`
         this.evaluate(v)
     }
 
