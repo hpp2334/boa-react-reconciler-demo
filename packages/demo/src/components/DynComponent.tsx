@@ -7,51 +7,83 @@ interface DynComponentProps {
 
 const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
   const renderNode = (node: UINodeDrawable): React.ReactNode => {
-    const { type, props, children } = node
+    const { type, props, children, parentType } = node
 
     // Base styles for all nodes
-    const baseStyle: React.CSSProperties = {}
+    const baseStyle: React.CSSProperties = {
+      position: 'relative'
+    }
 
-    // Apply color and background color if present
-    if (props.color) baseStyle.color = props.color
     if (props.backgroundColor) baseStyle.backgroundColor = props.backgroundColor
 
-    // Container styles for row/column layout
-    const containerStyle: React.CSSProperties = {
-      ...baseStyle,
-      display: 'flex',
-      flexDirection: type === 'row' ? 'row' : 'column',
-      gap: props.gap !== undefined ? `${props.gap}px` : undefined,
+    // Apply dimension properties
+    if (props.width !== undefined) baseStyle.width = props.width
+    if (props.height !== undefined) baseStyle.height = props.height
+
+    if (type === 'text') {
+      // Apply typography properties
+      if (props.color) baseStyle.color = props.color
+      if (props.fontSize !== undefined) baseStyle.fontSize = `${props.fontSize}px`
+      if (props.fontWeight !== undefined) baseStyle.fontWeight = props.fontWeight
+    }
+
+
+    // Handle absolute positioning when parent is a box
+    if (parentType === 'box') {
+      baseStyle.position = 'absolute'
+    }
+    if (type === 'padding') {
+      if (props.top !== undefined) baseStyle.paddingTop = `${props.top}px`
+      if (props.bottom !== undefined) baseStyle.paddingBottom = `${props.bottom}px`
+      if (props.left !== undefined) baseStyle.paddingLeft = `${props.left}px`
+      if (props.right !== undefined) baseStyle.paddingRight = `${props.right}px`
+    }
+
+    // Apply offset properties (work like CSS margins)
+    if (props.offsetTop !== undefined) baseStyle.top = `${props.offsetTop}px`
+    if (props.offsetBottom !== undefined) baseStyle.bottom = `${props.offsetBottom}px`
+    if (props.offsetLeft !== undefined) baseStyle.left = `${props.offsetLeft}px`
+    if (props.offsetRight !== undefined) baseStyle.right = `${props.offsetRight}px`
+
+    if (type === 'row' || type === 'column') {
+      baseStyle.display = 'flex'
+      baseStyle.flexDirection = type === 'row' ? 'row' : 'column'
+      baseStyle.gap = props.gap !== undefined ? `${props.gap}px` : undefined
+
+      // Apply flexbox alignment properties
+      if (props.mainAlignment) {
+        const alignmentMap = {
+          start: 'flex-start',
+          center: 'center',
+          end: 'flex-end'
+        }
+        const mainAxis = type === 'row' ? 'justifyContent' : 'alignItems'
+        baseStyle[mainAxis] = alignmentMap[props.mainAlignment]
+      }
+
+      if (props.crossAlignment) {
+        const alignmentMap = {
+          start: 'flex-start',
+          center: 'center',
+          end: 'flex-end'
+        }
+        const crossAxis = type === 'row' ? 'alignItems' : 'justifyContent'
+        baseStyle[crossAxis] = alignmentMap[props.crossAlignment]
+      }
     }
 
     // Handle different node types
     switch (type) {
       case 'text':
         return (
-          <span key={node.id} style={baseStyle}>
+          <span data-type={type} key={node.id} style={baseStyle}>
             {props.text || ''}
-            {children.map(renderNode)}
           </span>
         )
-
-      case 'row':
-        return (
-          <div key={node.id} style={containerStyle}>
-            {children.map(renderNode)}
-          </div>
-        )
-
-      case 'column':
-        return (
-          <div key={node.id} style={containerStyle}>
-            {children.map(renderNode)}
-          </div>
-        )
-
       default:
         // Fallback for any unexpected types
         return (
-          <div key={node.id} style={baseStyle}>
+          <div data-type={type} key={node.id} style={baseStyle}>
             {children.map(renderNode)}
           </div>
         )

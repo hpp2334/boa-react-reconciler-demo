@@ -88,6 +88,7 @@ export class TreeManager {
     const drawable: UINodeDrawable = {
       id: node.id,
       type: node.type,
+      parentType: node.parent?.type || null,
       props: { ...node.props },
       children: []
     };

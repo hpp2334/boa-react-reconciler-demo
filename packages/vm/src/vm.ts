@@ -186,11 +186,16 @@ export class VM {
     if (type === 'text') return 'text';
     if (type === 'row') return 'row';
     if (type === 'column') return 'column'
+    if (type === 'box') return 'box'
+    if (type === 'padding') return 'padding'
     return 'column'
   }
 
   createRoot(): UINodeId {
-    const root = this.treeManager.createNode('column', {})
+    const root = this.treeManager.createNode('column', {
+      width: '100%',
+      height: '100%'
+    })
     const reactRoot = this.reconciler.createContainer(
       root,
       0,
