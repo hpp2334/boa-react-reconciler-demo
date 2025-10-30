@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "name": "boa-react-reconciler-demo",
+  "outputDirectory": "./packages/demo/dist",
+  "buildCommand": "pnpm run build",
+  "framework": null
+}
