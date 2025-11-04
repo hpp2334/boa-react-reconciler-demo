@@ -2,13 +2,11 @@ import { UINodeDrawable } from "@brrd/types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { JsRuntime } from "./js-runtime";
 
-export function useDrawable(code: string): UINodeDrawable | null {
+export function useDrawable(runtime: JsRuntime, code: string): UINodeDrawable | null {
     const rootIdRef = useRef<string>("")
-    const rtRef = useRef(new JsRuntime())
     const [drawable, setDrawable] = useState<UINodeDrawable | null>(null)
 
     const updateDrawable = useCallback(() => {
-        const runtime = rtRef.current
         const rootId = rootIdRef.current
 
         const newDrawable = runtime.getDrawable(rootId)
@@ -16,7 +14,6 @@ export function useDrawable(code: string): UINodeDrawable | null {
     }, [])
 
     useEffect(() => {
-        const runtime = rtRef.current
         runtime.setAfterTimeout(() => {
             updateDrawable()
         })
@@ -27,8 +24,6 @@ export function useDrawable(code: string): UINodeDrawable | null {
     }, [updateDrawable])
 
     useEffect(() => {
-        const runtime = rtRef.current
-
         const rootId = runtime.createRoot()
         rootIdRef.current = rootId
 

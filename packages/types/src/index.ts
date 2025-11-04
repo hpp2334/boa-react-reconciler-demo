@@ -31,6 +31,7 @@ export interface UINodeProps {
     offsetBottom?: number
     offsetLeft?: number
     offsetRight?: number
+    onClick?: () => void
 }
 
 // parentType === 'box', then position is `absolute`

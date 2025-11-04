@@ -65,6 +65,14 @@ export class TreeManager {
     return true;
   }
 
+  triggerClickEvent(nodeId: UINodeId) {
+    const node = this.tree.nodes.get(nodeId);
+    if (!node) {
+      return
+    }
+    node.props.onClick?.()
+  }
+
   getNode(id: UINodeId): UITreeNode | undefined {
     return this.tree.nodes.get(id);
   }

@@ -21,3 +21,7 @@ export const render = (rootId: UINodeId, compiledCode: string) => {
 export const getDrawable = (rootId: UINodeId): string => {
     return JSON.stringify(vm.getDrawable(rootId))
 }
+
+export const emitClickEvent = (nodeId: UINodeId) => {
+    vm.emitClickEvent(nodeId)
+}

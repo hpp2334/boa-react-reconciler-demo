@@ -85,6 +85,10 @@ return <App />
         return JSON.parse(ret)
     }
 
+    emitClickEvent(id: UINodeId) {
+        this.evaluate(`BrrdVM.emitClickEvent("${id}")`)
+    }
+
     private evaluate(code: string) {
         return this._cx.evaluate(code)
     }

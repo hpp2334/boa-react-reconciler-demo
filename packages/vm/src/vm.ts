@@ -234,6 +234,10 @@ export class VM {
   clear(nodeId: UINodeId): void {
     this.treeManager.removeNode(nodeId);
   }
+
+  emitClickEvent(nodeId: UINodeId) {
+    this.treeManager.triggerClickEvent(nodeId)
+  }
   
   getDrawable(nodeId: UINodeId) {
     return this.treeManager.getDrawable(nodeId)

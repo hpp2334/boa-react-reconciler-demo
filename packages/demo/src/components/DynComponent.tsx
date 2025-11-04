@@ -1,11 +1,13 @@
 import React from 'react'
 import type { UINodeDrawable } from '@brrd/types'
+import { JsRuntime } from '../core'
 
 interface DynComponentProps {
   drawable: UINodeDrawable
+  rt: JsRuntime
 }
 
-const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
+const DynComponent: React.FC<DynComponentProps> = ({ rt, drawable }) => {
   const renderNode = (node: UINodeDrawable): React.ReactNode => {
     const { type, props, children, parentType } = node
 
@@ -72,6 +74,13 @@ const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
       }
     }
 
+    let onClick = () => {}
+    if (props.onClick) {
+      onClick = () => {
+        rt.emitClickEvent(node.id)
+      }
+    }
+
     // Handle different node types
     switch (type) {
       case 'text':
@@ -83,7 +92,7 @@ const DynComponent: React.FC<DynComponentProps> = ({ drawable }) => {
       default:
         // Fallback for any unexpected types
         return (
-          <div data-type={type} key={node.id} style={baseStyle}>
+          <div data-type={type} key={node.id} style={baseStyle} onClick={onClick}>
             {children.map(renderNode)}
           </div>
         )

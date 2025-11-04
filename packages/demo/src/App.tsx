@@ -1,15 +1,17 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import CodeEditor from './components/CodeEditor'
 import Preview from './components/Preview'
 import PresetSelector from './components/PresetSelector'
 import "./presets"
 import { getPresetConfig, isPreset, Preset } from './presets'
 import { useDrawable } from './core/ui'
+import { JsRuntime } from './core'
 
 const App: React.FC = () => {
+  const rtRef = useRef(new JsRuntime())
   const [selectedPreset, setSelectedPreset] = useState<Preset>('counter')
   const [code, setCode] = useState<string>(getPresetConfig(selectedPreset).code)
-  const drawable = useDrawable(code)
+  const drawable = useDrawable(rtRef.current, code)
 
   const handlePresetChange = (presetKey: string) => {
     if (isPreset(presetKey)) {
@@ -40,7 +42,7 @@ const App: React.FC = () => {
           />
         </div>
         <div className="flex-1 bg-gray-50 flex flex-col">
-          <Preview drawable={drawable} />
+          <Preview rt={rtRef.current} drawable={drawable} />
         </div>
       </div>
     </div>

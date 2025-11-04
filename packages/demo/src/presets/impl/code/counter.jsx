@@ -24,13 +24,16 @@ function Button(props) {
 function App() {
     const [v, setV] = useState(0)
 
+    const incr = () => { setV(v + 1) }
+    const decr = () => { setV(v - 1) }
+
     return (
         <column width="100%" mainAlignment="center">
             <text text="Counter" />
             <text text={v.toString()} fontSize={32} />
             <row gap={8}>
-                <Button prefix="+" text="Increment" />
-                <Button prefix="-" text="Decrement" />
+                <Button prefix="+" text="Increment" onClick={incr} />
+                <Button prefix="-" text="Decrement" onClick={decr} />
             </row>
         </column>
     )
