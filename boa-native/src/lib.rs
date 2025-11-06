@@ -1,6 +1,10 @@
+use std::collections::HashSet;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicI32;
+use std::thread;
+use std::time::Duration;
 
+use boa_engine::job::{NativeJob, TimeoutJob};
 use boa_engine::{JsError, JsResult, JsValue};
 
 use boa_engine::{Context, JsString, NativeFunction, Source, js_string};
@@ -15,9 +19,8 @@ struct Timer {
 
 thread_local! {
     static CX_ID: AtomicI32 = AtomicI32::new(1);
+    static CLEARED_TIMERS: Mutex<HashSet<i32>> = Default::default();
     static TIMER_ID: AtomicI32 = AtomicI32::new(1);
-    static CURRENT_TIME: AtomicI32 = AtomicI32::new(0);
-    static ON_TIMERS: Mutex<Vec<Timer>> = Mutex::new(Vec::new());
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -89,16 +92,22 @@ fn nf_set_timeout(_this: &JsValue, args: &[JsValue], cx: &mut Context) -> JsResu
     let ms = ms.unwrap_or(4);
 
     let handle = TIMER_ID.with(|v| v.fetch_add(1, std::sync::atomic::Ordering::SeqCst));
-    let expired = CURRENT_TIME.with(|v| v.fetch_add(ms, std::sync::atomic::Ordering::SeqCst));
-    ON_TIMERS.with(|v| {
-        let mut v = v.lock().unwrap();
-        v.push(Timer {
-            cx_id,
-            handle,
-            expired,
-            f,
-        });
-    });
+    let job = TimeoutJob::new(
+        NativeJob::new(move |cx| {
+            let handle = handle;
+            let should_cancel = CLEARED_TIMERS.with(|v| {
+                let mut v = v.lock().unwrap();
+                v.remove(&handle)
+            });
+            if should_cancel {
+                return Ok(JsValue::undefined());
+            }
+
+            f.call(&JsValue::undefined(), &[], cx)
+        }),
+        ms as u64,
+    );
+    cx.enqueue_job(job.into());
 
     Ok(JsValue::from(handle))
 }
@@ -108,10 +117,10 @@ fn nf_clear_timeout(_this: &JsValue, args: &[JsValue], _cx: &mut Context) -> JsR
         let arg = args.first().unwrap();
         let arg = arg.as_i32();
         if let Some(handle) = arg {
-            ON_TIMERS.with(|v| {
+            CLEARED_TIMERS.with(|v| {
                 let mut v = v.lock().unwrap();
-                v.retain(|v| v.handle != handle);
-            });
+                v.insert(handle);
+            })
         }
     }
     Ok(JsValue::null())
@@ -166,9 +175,10 @@ impl UI {
         this
     }
 
-    pub fn evaluate(&mut self, code: &str) {
-        self.evaluate_impl(code).expect("Failed to evaluate");
+    pub fn evaluate(&mut self, code: &str) -> String {
+        let r = self.evaluate_impl(code).expect("Failed to evaluate");
         self.flush_event_loop();
+        r
     }
 
     pub fn create_root(&mut self) -> String {
@@ -194,12 +204,10 @@ impl UI {
     }
 
     fn flush_event_loop(&mut self) {
-        for _ in 0..100 {
-            if !self.single_event_loop() {
-                return;
-            }
+        for _ in 0..3 {
+            self.context.run_jobs().expect("Failed to run jobs");
+            thread::sleep(Duration::from_millis(50));
         }
-        panic!("Too many flush")
     }
 
     fn id(&mut self) -> i32 {
@@ -216,42 +224,5 @@ impl UI {
                 .expect("failed to std string")),
             Err(e) => Err(e),
         }
-    }
-
-    fn single_event_loop(&mut self) -> bool {
-        let cx_id = self.id();
-        let timer = ON_TIMERS.with(|f| {
-            let mut timers = f.lock().unwrap();
-
-            let mut idx = None;
-            let mut min = i32::MAX;
-            for (i, t) in timers.iter().enumerate() {
-                if t.expired < min && t.cx_id == cx_id {
-                    min = t.expired;
-                    idx = Some(i);
-                }
-            }
-            if let Some(i) = idx {
-                let timer = timers.remove(i);
-                return Some(timer);
-            }
-            None
-        });
-
-        if let Some(timer) = timer {
-            let expired = timer.expired;
-
-            CURRENT_TIME.with(|v| v.store(expired, std::sync::atomic::Ordering::SeqCst));
-
-            timer
-                .f
-                .call(&JsValue::null(), &[], &mut self.context)
-                .expect("Failed to invoke timer function");
-            true
-        } else {
-            false
-        }
-        //
-        // f.call(&JsValue::null(), &[], &mut self.context)
     }
 }

@@ -91,6 +91,7 @@ dependencies = [
  "futures-channel",
  "futures-concurrency",
  "futures-lite",
+ "getrandom",
  "hashbrown 0.16.0",
  "icu_normalizer",
  "indexmap",
@@ -115,6 +116,7 @@ dependencies = [
  "thin-vec",
  "thiserror",
  "time",
+ "web-time",
  "xsum",
 ]
 
@@ -466,9 +468,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "899def5c37c4fd7b2664648c28120ecec138e4d395b459e5ca34f9cce2dd77fd"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "r-efi",
  "wasip2",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1429,6 +1433,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "76f218a38c84bcb33c25ec7059b07847d465ce0e0a76b995e134a45adcb6af76"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "web-time"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a6580f308b1fad9207618087a65c04e7a10bc77e02c8e84e9b00dd4b12fa0bb"
+dependencies = [
+ "js-sys",
+ "wasm-bindgen",
 ]
 
 [[package]]
