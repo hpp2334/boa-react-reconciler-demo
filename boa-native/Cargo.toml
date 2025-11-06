@@ -1,0 +1,13 @@
+[package]
+name = "boa-native"
+version = "0.1.0"
+edition = "2024"
+
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+boa_engine = { git = "https://github.com/boa-dev/boa.git", rev = "d33152511fb646fd3d0ebeea0d8dfc1fd7f18097" }
+serde = { version = "1.0", features = ["derive"]}
+serde_json = "1.0"
