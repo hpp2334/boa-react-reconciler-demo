@@ -22,7 +22,7 @@ import type {
   TransitionStatus
 } from './types';
 
-export class VM {
+export class UI {
   private treeManager: TreeManager;
   private reconciler!: Reconciler<Container, Instance, TextInstance, SuspenseInstance, FormInstance, PublicInstance>;
   private currentUpdatePriority: ReactReconciler.EventPriority = 0;

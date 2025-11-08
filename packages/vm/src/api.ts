@@ -1,27 +1,33 @@
 import type { UINodeId } from '@brrd/types';
-import { VM } from './vm';
+import { UI } from './ui';
 import React from 'react';
 
-const vm = new VM()
+let ui: UI = null!
+
+export const initialize = () => {
+    const g = globalThis as any
+
+    ui = new UI()
+    g.React = React
+}
 
 export const createRoot = (): UINodeId => {
-    return vm.createRoot()
+    return ui.createRoot()
 }
 
 export const removeRoot = (id: UINodeId) => {
-    vm.clear(id)
+    ui.clear(id)
 }
 
-export const render = (rootId: UINodeId, compiledCode: string) => {
-    const f = new Function('React', compiledCode) as (r: typeof React) => React.ReactElement
-    const el = f(React)
-    vm.render(rootId, el)
+export const render = (rootId: UINodeId) => {
+    const el = React.createElement((globalThis as any)["App"])
+    ui.render(rootId, el)
 }
 
 export const getDrawable = (rootId: UINodeId): string => {
-    return JSON.stringify(vm.getDrawable(rootId))
+    return JSON.stringify(ui.getDrawable(rootId))
 }
 
 export const emitClickEvent = (nodeId: UINodeId) => {
-    vm.emitClickEvent(nodeId)
+    ui.emitClickEvent(nodeId)
 }

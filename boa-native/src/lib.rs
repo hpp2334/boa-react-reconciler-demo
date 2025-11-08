@@ -7,15 +7,8 @@ use std::time::Duration;
 use boa_engine::job::{NativeJob, TimeoutJob};
 use boa_engine::{JsError, JsResult, JsValue};
 
-use boa_engine::{Context, JsString, NativeFunction, Source, js_string};
-use serde::{Deserialize, Serialize};
-
-struct Timer {
-    handle: i32,
-    cx_id: i32,
-    expired: i32,
-    f: boa_engine::object::builtins::JsFunction,
-}
+use boa_engine::{Context, NativeFunction, Source, js_string};
+use serde::Deserialize;
 
 thread_local! {
     static CX_ID: AtomicI32 = AtomicI32::new(1);
@@ -27,13 +20,18 @@ thread_local! {
 pub struct UINodeProps {
     // text
     pub text: Option<String>,
+    #[serde(rename = "fontSize")]
     pub font_size: Option<f32>,
+    #[serde(rename = "fontWeight")]
     pub font_weight: Option<f32>,
     // column, row
     pub gap: Option<f32>,
+    #[serde(rename = "mainAlignment")]
     pub main_alignment: Option<Alignment>,
+    #[serde(rename = "crossAlignment")]
     pub cross_alignment: Option<Alignment>,
     // container (except for text)
+    #[serde(rename = "backgroundColor")]
     pub background_color: Option<String>,
     // padding
     pub top: Option<f32>,
@@ -44,10 +42,16 @@ pub struct UINodeProps {
     pub width: Option<String>,
     pub height: Option<String>,
     pub color: Option<String>,
+    #[serde(rename = "offsetTop")]
     pub offset_top: Option<f32>,
+    #[serde(rename = "offsetBottom")]
     pub offset_bottom: Option<f32>,
+    #[serde(rename = "offsetLeft")]
     pub offset_left: Option<f32>,
+    #[serde(rename = "offsetRight")]
     pub offset_right: Option<f32>,
+    #[serde(rename = "testId")]
+    pub test_id: Option<String>,
     // onClick is omitted: callbacks are not serializable
 }
 
@@ -76,13 +80,7 @@ pub struct UI {
     context: Context,
 }
 
-fn get_cx_id(cx: &mut Context) -> i32 {
-    let v = cx.eval(Source::from_bytes("globalThis._cxId")).unwrap();
-    v.as_i32().expect("failed to get cx id")
-}
-
 fn nf_set_timeout(_this: &JsValue, args: &[JsValue], cx: &mut Context) -> JsResult<JsValue> {
-    let cx_id = get_cx_id(cx);
     let f = args[0].as_function().expect("failed to cast to function");
     let ms = if args.len() >= 2 {
         args[1].as_i32()
@@ -160,18 +158,26 @@ fn build_context() -> Context {
         NativeFunction::from_fn_ptr(nf_clear_timeout),
     )
     .expect("failed to create clearTimeout fuc");
-    cx.register_global_builtin_callable(js_string!("log"), 1, NativeFunction::from_fn_ptr(nf_log))
-        .expect("failed to create log func");
+    cx.register_global_builtin_callable(
+        js_string!("nf_log"),
+        1,
+        NativeFunction::from_fn_ptr(nf_log),
+    )
+    .expect("failed to create nf_log func");
     cx
 }
 
 impl UI {
-    pub fn new() -> Self {
+    pub fn new(code: &str) -> Self {
         let mut this = Self {
             context: build_context(),
         };
+        // this.context.set_trace(true);
         this.evaluate_impl(include_str!("../../packages/vm/dist/index.js"))
             .expect("Failed to evalute vm");
+        this.evaluate_impl("BrrdVM.initialize()")
+            .expect("Failed to initalize BrrdVM");
+        this.evaluate_impl(code).expect("Failed to add ui code");
         this
     }
 
@@ -189,9 +195,10 @@ impl UI {
         id
     }
 
-    pub fn render_root(&mut self, id: String, iife: String) {
-        self.evaluate_impl(&format!("BrrdVM.render('{}', `return {}`)", id, iife))
+    pub fn render_root(&mut self, id: String) {
+        self.evaluate_impl(&format!("BrrdVM.render('{}')", id))
             .expect("Failed to render root");
+        self.flush_event_loop();
     }
 
     pub fn get_drawable(&mut self, id: String) -> UINodeDrawable {
@@ -203,15 +210,38 @@ impl UI {
         res
     }
 
+    pub fn emit_click_event(&mut self, id: String) {
+        self.evaluate_impl(&format!("BrrdVM.emitClickEvent('{}')", id))
+            .expect("Failed to emit click event");
+        self.flush_event_loop();
+    }
+
     fn flush_event_loop(&mut self) {
         for _ in 0..3 {
-            self.context.run_jobs().expect("Failed to run jobs");
-            thread::sleep(Duration::from_millis(50));
+            self.context.run_jobs().unwrap();
+            thread::sleep(Duration::from_millis(20));
         }
     }
 
-    fn id(&mut self) -> i32 {
-        return get_cx_id(&mut self.context);
+    pub fn find_drawable_by_test_id(
+        &self,
+        drawable: &UINodeDrawable,
+        test_id: &str,
+    ) -> Option<UINodeDrawable> {
+        if drawable
+            .props
+            .test_id
+            .as_ref()
+            .map_or(false, |id| id == test_id)
+        {
+            return Some(drawable.clone());
+        }
+        for child in &drawable.children {
+            if let Some(found) = self.find_drawable_by_test_id(child, test_id) {
+                return Some(found);
+            }
+        }
+        None
     }
 
     fn evaluate_impl(&mut self, s: &str) -> Result<String, JsError> {

@@ -126,3 +126,9 @@ impl BoaContext {
         }
     }
 }
+
+#[wasm_bindgen(typescript_custom_section)]
+const INTERFACE_DEFINITIONS: &'static str = r#"
+export function transformSync(code: string, opts?: unknown, experimental_plugin_bytes_resolver?: any): { code: string; map?: string; };
+"#;
+build_transform_sync!(#[wasm_bindgen(js_name = "transformSync", typescript_type = "transformSync",skip_typescript)]);
