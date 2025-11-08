@@ -1,6 +1,6 @@
 use boa_native_core::UI;
 
-const CODE: &str = include_str!("../assets/counter.js");
+const CODE: &str = include_str!("../../../../packages/demo/src/presets/impl/code/counter.jsx");
 
 #[test]
 fn test_counter_app() {

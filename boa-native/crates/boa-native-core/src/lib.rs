@@ -8,6 +8,7 @@ use boa_engine::job::{NativeJob, TimeoutJob};
 use boa_engine::{JsError, JsResult, JsValue};
 
 use boa_engine::{Context, NativeFunction, Source, js_string};
+use boa_native_swc::compile_jsx;
 use serde::Deserialize;
 
 thread_local! {
@@ -169,6 +170,8 @@ fn build_context() -> Context {
 
 impl UI {
     pub fn new(code: &str) -> Self {
+        let code = compile_jsx(code);
+
         let mut this = Self {
             context: build_context(),
         };
@@ -177,7 +180,8 @@ impl UI {
             .expect("Failed to evalute vm");
         this.evaluate_impl("BrrdVM.initialize()")
             .expect("Failed to initalize BrrdVM");
-        this.evaluate_impl(code).expect("Failed to add ui code");
+        this.evaluate_impl(code.as_str())
+            .expect("Failed to add ui code");
         this
     }
 

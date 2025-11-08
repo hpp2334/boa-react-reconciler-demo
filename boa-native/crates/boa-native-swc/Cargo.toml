@@ -1,5 +1,5 @@
 [package]
-name = "boa-native-core"
+name = "boa-native-swc"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -10,7 +10,11 @@ repository.workspace = true
 crate-type = ["rlib"]
 
 [dependencies]
-boa_engine = { workspace = true }
+swc = { version = "45.0.0" }
+swc_common = { version = "17.0.1", features = [
+  "sourcemap",
+  "parking_lot",
+] }
 serde = { workspace = true }
 serde_json = { workspace = true }
-boa-native-swc = { path = "../boa-native-swc" }
+anyhow = { workspace = true }
