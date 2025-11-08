@@ -1,0 +1,17 @@
+[package]
+name = "boa-native-tests"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[test]]
+name = "counter"
+path = "tests/counter.rs"
+
+[dependencies]
+boa-native-core = { path = "../boa-native-core" }
+
+[dev-dependencies]
+boa_engine = { workspace = true }

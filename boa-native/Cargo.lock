@@ -45,12 +45,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "812e12b5285cc515a9c72a5c1d3b6d46a19dac5acfef5265968c166106e31dd3"
 
 [[package]]
-name = "boa-native"
+name = "boa-native-core"
 version = "0.1.0"
 dependencies = [
  "boa_engine",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "boa-native-tests"
+version = "0.1.0"
+dependencies = [
+ "boa-native-core",
+ "boa_engine",
 ]
 
 [[package]]
