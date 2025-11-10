@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 
-const rootEl = document.createElement("root")
+const rootEl = document.createElement("div")
 document.body.append(rootEl)
 
 ReactDOM.createRoot(rootEl).render(

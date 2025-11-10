@@ -8,13 +8,8 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-boa_engine = { git = "https://github.com/boa-dev/boa.git", rev = "d33152511fb646fd3d0ebeea0d8dfc1fd7f18097", features = ["js"] }
+boa_engine = { git = "https://github.com/boa-dev/boa.git", rev = "2c1eb630fd698d71b164194be4fef95ce9477fec", features = ["js"] }
 wasm-bindgen = "0.2.84"
-
-# The `console_error_panic_hook` crate provides better debugging of panics by
-# logging them with `console.error`. This is great for development, but requires
-# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
-# code size when deploying.
 console_error_panic_hook = { version = "0.1.7" }
 swc_core = { version = "45.0.2", features = [
   "ecma_ast_serde",
@@ -27,7 +22,7 @@ swc_core = { version = "45.0.2", features = [
 getrandom = { version = "0.3.4", features = ["wasm_js"] }
 serde = { version = "1.0", features = ["derive"]}
 serde-wasm-bindgen = "0.6.5"
+icu_normalizer = "2.1.1"
 
 [profile.release]
-# Tell `rustc` to optimize for small code size.
-opt-level = "s"
+debug = true

@@ -33,6 +33,7 @@ export class JsRuntime {
     private _afterTimeout: (() => void) | null = null
 
     constructor() {
+        console.error("JsRuntime constructed")
         this.initializeContext()
 
         const onTimeout = this.onTimeout
@@ -57,6 +58,7 @@ export class JsRuntime {
     private initializeContext() {
         this.evaluate("Date.now = () => { return _DateNow() }")
         this.evaluate(vmCode)
+        this.evaluate("BrrdVM.initialize();")
     }
 
     createRoot(): UINodeId {
@@ -69,15 +71,16 @@ export class JsRuntime {
     }
 
     render(id: UINodeId, code: string) {
-        const compiled = compileTSX(`
-(function () {
-${code}
+        const _compiled = compileTSX(code)
+        const compiled = `
+var App = (() => {
+    ${_compiled}
 
-return <App />
+    return App
 })()
-`)
-        const v = `BrrdVM.render("${id}", "return " + BrrdVM.fromBase64("${toBase64(compiled)}"))`
-        this.evaluate(v)
+        `
+        this.evaluate(compiled)
+        this.evaluate(`BrrdVM.render("${id}")`)
     }
 
     getDrawable(id: UINodeId): UINodeDrawable {

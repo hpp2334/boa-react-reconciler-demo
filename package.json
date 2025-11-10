@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "cd ./boa-wasm && wasm-pack build && cd .. && pnpm -r build",
+    "build": "cd ./boa-wasm && wasm-pack build --no-opt && cd .. && pnpm -r build",
     "deploy": "cd ./packages/demo && vercel deploy --prod",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test"

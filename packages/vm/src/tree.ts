@@ -114,7 +114,7 @@ export class TreeManager {
       id: node.id,
       type: node.type,
       parentType: node.parent?.type || null,
-      props: { ...node.props },
+      props: { ...node.props, hasClickHandler: Boolean(node.props.onClick), hasInputHandler: Boolean(node.props.onInput) },
       children: [],
     };
 

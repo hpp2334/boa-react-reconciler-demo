@@ -75,7 +75,7 @@ const DynComponent: React.FC<DynComponentProps> = ({ rt, drawable }) => {
     }
 
     let onClick = () => {}
-    if (props.onClick) {
+    if (props.hasClickHandler) {
       onClick = () => {
         rt.emitClickEvent(node.id)
       }

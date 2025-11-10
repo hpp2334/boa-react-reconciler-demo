@@ -31,6 +31,8 @@ export interface UINodeProps {
     offsetBottom?: number
     offsetLeft?: number
     offsetRight?: number
+    hasClickHandler?: boolean
+    hasInputHandler?: boolean
     onClick?: () => void
     onInput?: (value: string) => void
 }
