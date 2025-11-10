@@ -4,7 +4,7 @@ import type React from "react";
 export type UINodeId = string;
 
 // Node type definitions
-export type UINodeType = 'row' | 'column' | 'padding' | 'box' | 'text';
+export type UINodeType = 'row' | 'column' | 'padding' | 'box' | 'input' | 'text';
 
 export interface UINodeProps {
     // text
@@ -23,6 +23,8 @@ export interface UINodeProps {
     bottom?: number
     left?: number
     right?: number
+    // input
+    value?: string
     // all
     width?: string
     height?: string

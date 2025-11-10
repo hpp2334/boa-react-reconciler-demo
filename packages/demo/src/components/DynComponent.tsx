@@ -74,6 +74,8 @@ const DynComponent: React.FC<DynComponentProps> = ({ rt, drawable }) => {
       }
     }
 
+    let value = props.value
+
     let onClick = () => {}
     if (props.hasClickHandler) {
       onClick = () => {
@@ -81,8 +83,19 @@ const DynComponent: React.FC<DynComponentProps> = ({ rt, drawable }) => {
       }
     }
 
+    let onChange: React.ChangeEventHandler<HTMLInputElement> = (_value) => {}
+    if (props.hasInputHandler) {
+      onChange = (value) => {
+        rt.emitInputEvent(node.id, value.target.value)
+      }
+    }
+
     // Handle different node types
     switch (type) {
+      case 'input':
+        return (
+          <input data-type={type} key={node.id} style={baseStyle} value={value} onClick={onClick} onChange={onChange}></input>
+        )
       case 'text':
         return (
           <span data-type={type} key={node.id} style={baseStyle}>

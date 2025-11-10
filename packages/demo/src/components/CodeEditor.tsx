@@ -37,7 +37,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       <div className="px-4 py-2.5 bg-gray-100 border-b border-gray-200 text-sm font-medium text-gray-600">
         Code Editor
       </div>
-      <div className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <CodeMirror
           className='h-full'
           value={value}
@@ -55,6 +55,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             closeBrackets: true,
             autocompletion: true,
             highlightSelectionMatches: false,
+          }}
+          style={{
+            overflowY: 'auto',
+            maxHeight: '100%'
           }}
         />
       </div>

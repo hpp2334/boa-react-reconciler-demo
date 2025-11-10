@@ -92,6 +92,10 @@ var App = (() => {
         this.evaluate(`BrrdVM.emitClickEvent("${id}")`)
     }
 
+    emitInputEvent(id: UINodeId, value: string) {
+        this.evaluate(`BrrdVM.emitInputEvent("${id}", "${value}")`)
+    }
+
     private evaluate(code: string) {
         return this._cx.evaluate(code)
     }

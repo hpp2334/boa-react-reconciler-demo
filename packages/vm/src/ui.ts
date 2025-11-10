@@ -188,6 +188,7 @@ export class UI {
     if (type === 'column') return 'column'
     if (type === 'box') return 'box'
     if (type === 'padding') return 'padding'
+    if (type === 'input') return 'input'
     return 'column'
   }
 
