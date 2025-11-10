@@ -220,6 +220,12 @@ impl UI {
         self.flush_event_loop();
     }
 
+    pub fn emit_input_event(&mut self, id: String, value: String) {
+        self.evaluate_impl(&format!("BrrdVM.emitInputEvent('{}', '{}')", id, value))
+            .expect("Failed to emit input event");
+        self.flush_event_loop();
+    }
+
     fn flush_event_loop(&mut self) {
         for _ in 0..3 {
             self.context.run_jobs().unwrap();

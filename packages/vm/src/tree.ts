@@ -1,4 +1,11 @@
-import type { UITreeNode, UITree, UINodeType, UINodeId, UINodeProps, UINodeDrawable } from './types';
+import type {
+  UITreeNode,
+  UITree,
+  UINodeType,
+  UINodeId,
+  UINodeProps,
+  UINodeDrawable,
+} from "./types";
 
 export class TreeManager {
   private tree: UITree = {
@@ -23,7 +30,9 @@ export class TreeManager {
   }
 
   removeChild(parent: UITreeNode, childId: UINodeId): boolean {
-    const index = parent.children.findIndex((child: UITreeNode) => child.id === childId);
+    const index = parent.children.findIndex(
+      (child: UITreeNode) => child.id === childId,
+    );
     if (index !== -1) {
       const removed = parent.children[index];
       if (removed) {
@@ -47,7 +56,7 @@ export class TreeManager {
 
     // Recursively remove all children
     const removeRecursive = (n: UITreeNode) => {
-      n.children.forEach(child => {
+      n.children.forEach((child) => {
         removeRecursive(child);
       });
       this.tree.nodes.delete(n.id);
@@ -68,9 +77,17 @@ export class TreeManager {
   triggerClickEvent(nodeId: UINodeId) {
     const node = this.tree.nodes.get(nodeId);
     if (!node) {
-      return
+      return;
     }
-    node.props.onClick?.()
+    node.props.onClick?.();
+  }
+
+  triggerInputEvent(nodeId: UINodeId, value: string) {
+    const node = this.tree.nodes.get(nodeId);
+    if (!node) {
+      return;
+    }
+    node.props.onInput?.(value);
   }
 
   getNode(id: UINodeId): UITreeNode | undefined {
@@ -79,14 +96,14 @@ export class TreeManager {
 
   getTree(): UITree {
     return {
-      nodes: new Map(this.tree.nodes)
+      nodes: new Map(this.tree.nodes),
     };
   }
 
   getDrawable(nodeId: UINodeId): UINodeDrawable {
     const node = this.tree.nodes.get(nodeId);
     if (!node) {
-      throw Error(`Node ${nodeId} not found`)
+      throw Error(`Node ${nodeId} not found`);
     }
 
     return this.convertToDrawable(node);
@@ -98,7 +115,7 @@ export class TreeManager {
       type: node.type,
       parentType: node.parent?.type || null,
       props: { ...node.props },
-      children: []
+      children: [],
     };
 
     // Convert children recursively

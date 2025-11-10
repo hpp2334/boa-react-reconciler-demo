@@ -31,3 +31,7 @@ export const getDrawable = (rootId: UINodeId): string => {
 export const emitClickEvent = (nodeId: UINodeId) => {
     ui.emitClickEvent(nodeId)
 }
+
+export const emitInputEvent = (nodeId: UINodeId, value: string) => {
+    ui.emitInputEvent(nodeId, value)
+}

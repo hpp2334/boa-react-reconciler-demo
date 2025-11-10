@@ -238,7 +238,11 @@ export class UI {
   emitClickEvent(nodeId: UINodeId) {
     this.treeManager.triggerClickEvent(nodeId)
   }
-  
+
+  emitInputEvent(nodeId: UINodeId, value: string) {
+    this.treeManager.triggerInputEvent(nodeId, value)
+  }
+
   getDrawable(nodeId: UINodeId) {
     return this.treeManager.getDrawable(nodeId)
   }

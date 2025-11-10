@@ -6,10 +6,6 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 
-[[test]]
-name = "counter"
-path = "tests/counter.rs"
-
 [dependencies]
 boa-native-core = { path = "../boa-native-core" }
 
