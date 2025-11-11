@@ -49,6 +49,7 @@ module.exports = defineConfig({
   ],
   devServer: {
     port: 3001,
+    historyApiFallback: true,
   },
   experiments: {
     css: true,

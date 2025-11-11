@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import CodeEditor from './components/CodeEditor'
 import Preview from './components/Preview'
 import PresetSelector from './components/PresetSelector'
@@ -14,10 +14,45 @@ const App: React.FC = () => {
   const [code, setCode] = useState<string>(getPresetConfig(selectedPreset).code)
   const drawable = useDrawable(rt, code)
 
+  // Function to get preset from URL path
+  const getPresetFromPath = (): Preset => {
+    const path = window.location.pathname.substring(1) // Remove leading slash
+    if (path && isPreset(path)) {
+      return path
+    }
+    return 'counter' // Default preset
+  }
+
+  // Update URL when preset changes
+  const updateURL = (preset: Preset) => {
+    const newURL = `${window.location.origin}/${preset}`
+    window.history.pushState({}, '', newURL)
+  }
+
+  // Initialize preset from URL on mount
+  useEffect(() => {
+    const presetFromURL = getPresetFromPath()
+    setSelectedPreset(presetFromURL)
+    setCode(getPresetConfig(presetFromURL).code)
+  }, [])
+
+  // Listen to browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const presetFromURL = getPresetFromPath()
+      setSelectedPreset(presetFromURL)
+      setCode(getPresetConfig(presetFromURL).code)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
   const handlePresetChange = (presetKey: string) => {
     if (isPreset(presetKey)) {
       setSelectedPreset(presetKey)
       setCode(getPresetConfig(presetKey).code)
+      updateURL(presetKey)
     }
   }
 

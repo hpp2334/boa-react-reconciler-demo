@@ -2,7 +2,6 @@ import { BoaContext } from "../../../../boa-wasm/pkg/boa_wasm";
 import vmCode from '@brrd/vm?raw'
 import type { UINodeDrawable, UINodeId } from "@brrd/types";
 import { compileTSX } from "./compile";
-import { toBase64 } from "js-base64";
 
 const onTimeoutHandlers: Set<(cx_id: number, f: any) => void> = new Set();
 
