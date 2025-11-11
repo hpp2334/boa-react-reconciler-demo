@@ -47,6 +47,12 @@ const DynComponent: React.FC<DynComponentProps> = ({ rt, drawable }) => {
     if (props.offsetLeft !== undefined) baseStyle.left = `${props.offsetLeft}px`
     if (props.offsetRight !== undefined) baseStyle.right = `${props.offsetRight}px`
 
+    if (props.borderColor) {
+      baseStyle.borderColor = props.borderColor
+      baseStyle.borderWidth = "1px"
+    }
+    if (props.borderRadius) baseStyle.borderRadius = `${props.borderRadius}px`
+
     if (type === 'row' || type === 'column') {
       baseStyle.display = 'flex'
       baseStyle.flexDirection = type === 'row' ? 'row' : 'column'

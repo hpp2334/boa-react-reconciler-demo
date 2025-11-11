@@ -25,7 +25,7 @@ const PresetSelector: React.FC<PresetSelectorProps> = ({
           const conf = getPresetConfig(preset)
 
           return <option key={preset} value={preset}>
-            {conf.name} -{conf.description}
+            {conf.name}
           </option>
         })}
       </select>

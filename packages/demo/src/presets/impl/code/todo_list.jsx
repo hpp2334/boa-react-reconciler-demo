@@ -17,9 +17,9 @@ function PaddingAll(props) {
 
 function Button(props) {
   return (
-    <row backgroundColor="gray" onClick={props.onClick} testId={props.testId}>
+    <row backgroundColor={props.backgroundColor || "gray"} onClick={props.onClick} testId={props.testId}>
       <PaddingAll value={8}>
-        <row gap={4} backgroundColor="gray">
+        <row gap={4}>
           <text text={props.prefix} />
           <text text={props.text} />
         </row>
@@ -30,12 +30,17 @@ function Button(props) {
 
 function TodoItem(props) {
   return (
-    <row width="100%" backgroundColor="lightgray" gap={8}>
-      <text text={props.text} fontSize={16} testId={`btn-text-${props.id}`} />
+    <row backgroundColor="lightgray" gap={8} crossAlignment="center">
+      <row width="250px">
+        <PaddingAll value={8}>
+          <text text={props.text} fontSize={16} testId={`btn-text-${props.id}`} />
+        </PaddingAll>
+      </row>
       <Button
         prefix="×"
         text="Remove"
         onClick={props.onRemove}
+        backgroundColor="red"
         testId={`btn-remove-${props.id}`}
       />
     </row>
@@ -60,16 +65,17 @@ function TodoList() {
   return (
     <column width="100%" mainAlignment="center">
       <text text="Todo List" fontSize={24} />
-      <row gap={8} width="100%">
+      <row gap={8}>
         <input
           value={inputText}
           onInput={(value) => setInputText(value)}
-          placeholder="Enter a todo..."
+          borderColor="gray"
           testId="input-todo"
         />
         <Button prefix="+" text="Add" onClick={addTodo} testId="btn-add" />
       </row>
-      <column gap={4} width="100%">
+      <row height="40px" />
+      <column gap={4} width="300px">
         <text text={`Total Todos: ${todos.length}`} testId="text-cnt" />
         {todos.map((todo) => (
           <TodoItem

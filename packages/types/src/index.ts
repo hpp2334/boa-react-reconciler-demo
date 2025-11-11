@@ -15,8 +15,10 @@ export interface UINodeProps {
     gap?: number
     mainAlignment?: 'start' | 'center' | 'end'
     crossAlignment?: 'start' | 'center' | 'end'
-    // container (expect for text)
+    // container (except for text)
     backgroundColor?: string
+    borderColor?: string
+    borderRadius?: number
     children?: React.ReactNode[]
     // padding
     top?: number
