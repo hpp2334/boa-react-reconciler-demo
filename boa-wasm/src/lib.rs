@@ -1,8 +1,8 @@
-use std::sync::atomic::AtomicI32;
+use std::{rc::Rc, sync::atomic::AtomicI32};
 
 use swc_core::binding_macros::build_transform_sync;
 use wasm_bindgen::prelude::*;
-use boa_engine::{Context, JsString, NativeFunction, Source, js_string};
+use boa_engine::{Context, JsString, NativeFunction, Source, context::{Clock, time::JsInstant}, js_string};
 
 
 thread_local! {
@@ -42,11 +42,11 @@ fn nf_set_timeout(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], cx:
     let cx_id = get_cx_id(cx);
     let f = args[0].as_function().expect("failed to cast to function");
     let ms = if args.len() >= 2 {
-        args[1].as_i32()
+        args[1].as_number()
     } else {
         None
     };
-    let ms = ms.unwrap_or(4);
+    let ms = ms.unwrap_or(4.0);
 
     let handle = bc_set_timeout(cx_id, BindgenBoaJsFunc {
         value: f
@@ -80,8 +80,20 @@ fn nf_log(_this: &boa_engine::JsValue, args: &[boa_engine::JsValue], _cx: &mut C
     Ok(boa_engine::JsValue::null())
 }
 
+struct NfClock;
+impl Clock for NfClock {
+    fn now(&self) -> JsInstant {
+        let c = bc_date_now();
+        let secs = (c / 1000) as u64;
+        let nanos = (c % 1000) * 1_000_000;
+        JsInstant::new(secs, nanos)
+    }
+}
+
 fn build_context() -> Context {
-    let mut cx = Context::default();
+    let mut cx = Context::builder()
+        .clock(Rc::new(NfClock))
+        .build().unwrap();
     {
         let id = CX_ID.with(|r| r.fetch_add(1, std::sync::atomic::Ordering::SeqCst));
         let s = format!("globalThis._cxId = {}", id);
@@ -91,7 +103,7 @@ fn build_context() -> Context {
     cx.register_global_builtin_callable(js_string!("setTimeout"), 2, NativeFunction::from_fn_ptr(nf_set_timeout)).expect("failed to create setTimeout fuc");
     cx.register_global_builtin_callable(js_string!("clearTimeout"), 1, NativeFunction::from_fn_ptr(nf_clear_timeout)).expect("failed to create clearTimeout fuc");
     cx.register_global_builtin_callable(js_string!("_DateNow"), 0, NativeFunction::from_fn_ptr(nf_date_now)).expect("failed to create _DateNow func");
-    cx.register_global_builtin_callable(js_string!("log"), 1, NativeFunction::from_fn_ptr(nf_log)).expect("failed to create log func");
+    cx.register_global_builtin_callable(js_string!("nf_log"), 1, NativeFunction::from_fn_ptr(nf_log)).expect("failed to create log func");
     cx
 }
 
@@ -110,6 +122,7 @@ impl BoaContext {
     #[wasm_bindgen]
     pub fn evaluate(&mut self, s: &str) -> Result<String, JsValue> {
         let r = self.context.eval(Source::from_bytes(s));
+        let _ = self.context.run_jobs();
         match r {
             Ok(r) => Ok(r.to_string(&mut self.context).expect("failed to string").to_std_string().expect("failed to std string")),
             Err(e) => Err(JsValue::from(format!("Uncaught {e}")))

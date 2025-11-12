@@ -32,7 +32,6 @@ export class JsRuntime {
     private _afterTimeout: (() => void) | null = null
 
     constructor() {
-        console.error("JsRuntime constructed")
         this.initializeContext()
 
         const onTimeout = this.onTimeout

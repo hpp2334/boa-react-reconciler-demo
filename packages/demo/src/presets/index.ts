@@ -2,7 +2,7 @@ import { Config } from "./impl/type"
 
 const cx = require.context("./impl", false)
 
-const presets = ["counter", "todo_list"] as const
+const presets = ["counter", "todo_list", "remote_file_explorer"] as const
 
 export type Preset = typeof presets[number]
 
